@@ -221,6 +221,10 @@ function admin__logout() {
     $expadmindata=array();
     $SESSION['expadmindata']=$expadmindata;
     session_destroy();
+    if(isset($_SERVER['PHP_AUTH_USER'])){
+    	header('WWW-Authenticate: Basic realm="logout realm"');
+    	header('HTTP/1.0 401 Unauthorized');
+    }
 }
 
 
