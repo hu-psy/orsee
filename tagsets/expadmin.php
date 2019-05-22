@@ -84,6 +84,55 @@ function admin__check_login($username,$password) {
     }
 }
 
+function admin__check_login_ldap($username) {
+    global $lang;
+    $pars=array(':adminname'=>$username);
+    $query="SELECT * FROM ".table('admin')."
+            WHERE adminname= :adminname";
+    $admin=orsee_query($query,$pars);
+
+    $continue=true;
+    $not_allowed=false; $locked=false;
+    if ($continue) {
+        if (!isset($admin['admin_id'])) {
+            $continue=false;
+            log__admin('login_admin_wrong_username','used_username:'.$username);
+            //message('id');
+        }
+    }
+
+    if ($continue) {
+        $admin=admin__check_has_lockout($admin);
+        if ($admin['locked']) {
+            $continue=false;
+            log__admin('login_admin_locked_out','username:'.$username);
+            $locked=admin__track_unsuccessful_login($admin);
+            //message('locked');
+        }
+    }
+
+    if ($continue) {
+        $expadmindata=$admin;
+        // load admin rights
+        $expadmindata['rights']=admin__load_admin_rights($expadmindata['admin_type']);
+        if ((!$expadmindata['rights']['login']) || $expadmindata['disabled']=='y') {
+            $continue=false;
+            $not_allowed=true;
+            //message('not_allowed');
+        }
+    }
+
+    if ($continue) {
+        $_SESSION['expadmindata']=$expadmindata;
+        $done=admin__track_successful_login($admin);
+        return true;
+    } else {
+        //if ($locked) message(lang('error_locked_out'));
+        if ($not_allowed) message(lang('error_not_allowed_to_login'));
+        return false;
+    }
+}
+
 function admin__check_has_lockout($admin) {
     global $settings;
     if (isset($settings['lockout_period_minutes_after_failed_logins']) && $settings['lockout_period_minutes_after_failed_logins']>0)
