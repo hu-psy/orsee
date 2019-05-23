@@ -891,29 +891,28 @@ function experimentmail__participant_registered_mail($participant,$session) {
     global $lang, $settings;
     // load experiment
     $experiment=orsee_db_load_array("experiments",$session['experiment_id'],"experiment_id");
+    $experimenters=db_string_to_id_array($experiment['experimenter_mail']);
 
-    $maillang=experimentmail__get_language($participant['language']);
+    foreach ($experimenters as $experimenter) {
+        $admin=orsee_db_load_array("admin",$experimenter,"admin_id");
+        if (isset($admin['admin_id'])) {
+    	    $maillang=experimentmail__get_language($admin['language']);
 
-    // load laboratory
-    $lab=laboratories__get_laboratory_text($session['laboratory_id'],$maillang);
+            $lab=laboratories__get_laboratory_text($session['laboratory_id'],$maillang);
+            $pform_fields=participant__load_participant_email_fields($maillang);
+            $experimentmail=experimentmail__fill_participant_details($participant,$pform_fields);
+            $experimentmail=experimentmail__get_experiment_registration_details($experimentmail,$experiment,$session,$lab);
+            $mailtext['subject']=load_language_symbol('enrolment_email_subject',$maillang);
+            $mailtext['body']=load_mail("public_experiment_registration",$maillang);
+            $message=process_mail_template($mailtext['body'],$experimentmail);
+    	    $message=$message.experimentmail__get_admin_footer($maillang,$admin);
 
-    $pform_fields=participant__load_participant_email_fields($maillang);
-    $experimentmail=experimentmail__fill_participant_details($participant,$pform_fields);
-    $experimentmail=experimentmail__get_experiment_registration_details($experimentmail,$experiment,$session,$lab);
+            $sendermail=experimentmail__get_sender_email($experiment);
+            $headers="From: ".$sendermail."\r\n";
 
-    $mailtext=false;
-    if ($settings['enable_enrolment_confirmation_customization']=='y')
-        $mailtext=experimentmail__get_customized_mailtext('experiment_enrolment_conf_mail',$session['experiment_id'],$maillang);
-    if (!isset($mailtext) || !$mailtext || !is_array($mailtext)) {
-        $mailtext['subject']=load_language_symbol('enrolment_email_subject',$maillang);
-        $mailtext['body']=load_mail("public_experiment_registration",$maillang);
+            experimentmail__mail($admin['email'],$mailtext['subject'],$message,$headers);
+        }
     }
-
-    $message=process_mail_template($mailtext['body'],$experimentmail);
-    $message=$message."\n".experimentmail__get_mail_footer($participant);
-    $sendermail=experimentmail__get_sender_email($experiment);
-    $headers="From: ".$sendermail."\r\n";
-    experimentmail__mail($participant['email'],$mailtext['subject'],$message,$headers);
 }
 
 function experimentmail__experiment_cancellation_mail($participant,$session) {
