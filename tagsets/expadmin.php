@@ -84,7 +84,7 @@ function admin__check_login($username,$password) {
     }
 }
 
-function admin__check_login_ldap($username) {
+function admin__check_login_ldap($username,$password) {
     global $lang;
     $pars=array(':adminname'=>$username);
     $query="SELECT * FROM ".table('admin')."
@@ -109,6 +109,24 @@ function admin__check_login_ldap($username) {
             $locked=admin__track_unsuccessful_login($admin);
             //message('locked');
         }
+    }
+
+    if ($continue) {
+	$ldap_host = "ldaps://ldap1.cms.hu-berlin.de/";
+	$ldap_rdn  = "uid=" . $username . ",ou=users,ou=Benutzerverwaltung,ou=Computer- und Medienservice,o=Humboldt-Universitaet zu Berlin,c=de";
+	$connect = ldap_connect($ldap_host);
+	if($connect) {
+		$bind = ldap_bind($connect, $ldap_rdn, $password);
+		if($bind) {
+			// authentication was successfull
+			ldap_close($connect);
+		} else {
+            		$continue=false;
+            		log__admin('login_admin_wrong_password','username:'.$username);
+		}
+	} else {
+		$continue = false;
+	}
     }
 
     if ($continue) {

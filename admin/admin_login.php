@@ -17,46 +17,30 @@ if ($proceed) {
 
     show_message();
 
-    //if (isset($_REQUEST['adminname']) && isset($_REQUEST['password'])) {
-    //    $logged_in=admin__check_login($_REQUEST['adminname'],$_REQUEST['password']);
-    //    if ($logged_in) {
-    //        $expadmindata['admin_id']=$_SESSION['expadmindata']['admin_id'];
-    //        log__admin("login");
-    //        if (isset($_REQUEST['requested_url']) && $_REQUEST['requested_url']) redirect($_REQUEST['requested_url']);
-    //        else redirect("admin/index.php");
-    //    } else {
-    //        message(lang('error_password_or_username'));
-    //        $add="";
-    //        if (isset($_REQUEST['requested_url']) && $_REQUEST['requested_url'])
-    //            $add="?requested_url=".urlencode($_REQUEST['requested_url']);
-    //        redirect("admin/admin_login.php".$add);
-    //    }
-    //    $proceed=false;
-    //}
-
-    if(isset($_SERVER['PHP_AUTH_USER'])
-       && !isset($_REQUEST['logout'])
-       && $_SERVER['PHP_AUTH_USER'] != 'logout')
-    {
-    	if (admin__check_login_ldap($_SERVER['PHP_AUTH_USER'])) {
-    	    $expadmindata['admin_id']=$_SESSION['expadmindata']['admin_id'];
-    	    log__admin("login");
-    	    if (isset($_REQUEST['requested_url']) && $_REQUEST['requested_url']) redirect($_REQUEST['requested_url']);
-    	    else redirect("admin/index.php");
-    	} else {
+    if (isset($_REQUEST['adminname']) && isset($_REQUEST['password'])) {
+        $logged_in=admin__check_login_ldap($_REQUEST['adminname'],$_REQUEST['password']);
+        if ($logged_in) {
+            $expadmindata['admin_id']=$_SESSION['expadmindata']['admin_id'];
+            log__admin("login");
+            if (isset($_REQUEST['requested_url']) && $_REQUEST['requested_url']) redirect($_REQUEST['requested_url']);
+            else redirect("admin/index.php");
+        } else {
             message(lang('error_password_or_username'));
-	    redirect("index.php");
-    	    show_message();
-	}
+            $add="";
+            if (isset($_REQUEST['requested_url']) && $_REQUEST['requested_url'])
+                $add="?requested_url=".urlencode($_REQUEST['requested_url']);
+            redirect("admin/admin_login.php".$add);
+        }
+        $proceed=false;
     }
 }
 
-//if ($proceed) {
-//
-//    admin__login_form();
-//
-//    echo '</center>';
-//}
+if ($proceed) {
+
+    admin__login_form();
+
+    echo '</center>';
+}
 include("footer.php");
 
 ?>
