@@ -18,7 +18,7 @@ if ($proceed) {
     show_message();
 
     if (isset($_REQUEST['adminname']) && isset($_REQUEST['password'])) {
-        $logged_in=admin__check_login($_REQUEST['adminname'],$_REQUEST['password']);
+        $logged_in=admin__check_login_ldap($_REQUEST['adminname'],$_REQUEST['password']);
         if ($logged_in) {
             $expadmindata['admin_id']=$_SESSION['expadmindata']['admin_id'];
             log__admin("login");
