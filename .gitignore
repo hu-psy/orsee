@@ -1,3 +1,5 @@
 config/settings.php
 usage/*
 !usage/webalizer.template
+pesa_migration/pesa.20190402.sql
+pesa_migration/.htaccess
