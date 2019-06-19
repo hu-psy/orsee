@@ -24,5 +24,5 @@ for sql_file in ${!array[@]}
 do
 	#echo "$sql_file ${array[$sql_file]}"
 	echo ${array[$sql_file]}
-	mysql -uroot -p < ${array[$sql_file]}
+	mysql < ${array[$sql_file]}
 done
