@@ -1,6 +1,6 @@
 #!/bin/bash
 
-admins=($(grep "Require user" .htaccess | sed "s/Require user//g"))
+admins=($(grep "Require user" htaccess | sed "s/Require user//g"))
 len=${#admins[@]}
 last=${admins[$len-1]}
 
