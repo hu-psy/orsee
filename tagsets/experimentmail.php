@@ -887,7 +887,7 @@ function experimentmail__experiment_registration_mail($participant,$session) {
 }
 
 // TODO: like experimentmail__experiment_registration_mail but sending a mail to the experimenter, roughly the same content
-function experimentmail__participant_registered_mail($participant,$session) {
+function experimentmail__experimenter_notification_mail($participant,$session, $type) {
     global $lang, $settings;
     // load experiment
     $experiment=orsee_db_load_array("experiments",$session['experiment_id'],"experiment_id");
@@ -903,7 +903,7 @@ function experimentmail__participant_registered_mail($participant,$session) {
             $experimentmail=experimentmail__fill_participant_details($participant,$pform_fields);
             $experimentmail=experimentmail__get_experiment_registration_details($experimentmail,$experiment,$session,$lab);
             $mailtext['subject']=load_language_symbol('enrolment_email_subject',$maillang);
-            $mailtext['body']=load_mail("public_experiment_registration",$maillang);
+            $mailtext['body']=load_mail($type, $maillang);
             $message=process_mail_template($mailtext['body'],$experimentmail);
     	    $message=$message.experimentmail__get_admin_footer($maillang,$admin);
 

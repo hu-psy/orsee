@@ -287,7 +287,7 @@ function expregister__register($participant,$session) {
             AND participant_id=:participant_id";
     $done=or_query($query,$pars);
     $done=experimentmail__experiment_registration_mail($participant,$session);
-    $done=experimentmail__participant_registered_mail($participant,$session);
+    $done=experimentmail__experimenter_notification_mail($participant,$session, "admin_experiment_registration");
 }
 
 function expregister__cancel($participant,$session) {
@@ -309,6 +309,7 @@ function expregister__cancel($participant,$session) {
             AND participant_id=:participant_id";
     $done=or_query($query,$pars);
     $done=experimentmail__experiment_cancellation_mail($participant,$session);
+    $done=experimentmail__experimenter_notification_mail($participant,$session, "admin_experiment_enrolment_cancellation");
 }
 
 
