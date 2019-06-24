@@ -14,9 +14,9 @@ So long
 
 PESA2019', 'Hallo!
 
-Ein Probant hat sich fuer das folgende Experiment angemeldet:
+Ein Proband hat sich fuer das folgende Experiment angemeldet:
 
-Probant: #fname# #lname#
+Proband: #fname# #lname#
 Experiment: #experiment#
 Datum und Zeit: #session#
 Labor: #laboratory#
@@ -46,9 +46,9 @@ Regards,
 PESA2019
 ', 'Hallo!
 
-Ein Probant hat sich fuer das folgende Experiment *abgemeldet*:
+Ein Proband hat sich fuer das folgende Experiment *abgemeldet*:
 
-Probant: #fname# #lname#
+Proband: #fname# #lname#
 Experiment: #experiment#
 Datum und Zeit: #session#
 Labor: #lab_name#
