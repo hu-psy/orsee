@@ -1,4 +1,4 @@
-#!/bin/bash
+#default_experiment_restriction!/bin/bash
 array=(pesa_transfer_experiment_types.sql
 pesa_transfer_experiments.sql
 pesa_transfer_sessions.sql
@@ -15,7 +15,8 @@ pesa_transfer_contact.sql
 pesa_transfer_impressum.sql
 pesa_transfer_subpools.sql
 pesa_transfer_mail.sql
-pesa_transfer_welcome.sql)
+pesa_transfer_welcome.sql
+pesa_add_new_options.sql)
 
 # transfering or_admin, this requires a .htaccess file
 ./pesa_transfer_admin.sh
