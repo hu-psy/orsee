@@ -854,7 +854,13 @@ function experimentmail__get_sender_email($experiment) {
     global $settings;
     if ($settings['enable_editing_of_experiment_sender_email']=='y' && $experiment['sender_mail'])
         return $experiment['sender_mail'];
-    else return $settings['support_mail'];
+    else if($settings['use_first_experimenters_mail_as_sender_mail']=='y') {
+	$experimenters=db_string_to_id_array($experiment['experimenter']);
+	foreach ($experimenters as $experimenter) {
+		$admin=orsee_db_load_array("admin",$experimenter,"admin_id");
+		return $admin['email'];
+	}
+    } else return $settings['support_mail'];
 }
 
 function experimentmail__experiment_registration_mail($participant,$session) {
