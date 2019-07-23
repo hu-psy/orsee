@@ -246,6 +246,13 @@ $system__options_general[]=array(
 );
 
 $system__options_general[]=array(
+'option_name'=>'use_experimenters_mail_as_default',
+'option_text'=>"Use the email address of the experiment's creator as default sender mail if sender mail is editable.",
+'type'=>'select_yesno_switchy',
+'default_value'=>'y'
+);
+
+$system__options_general[]=array(
 'option_name'=>'email_sendmail_type',
 'option_text'=>'Type of sending emails (see Manual,<BR>
                 try "direct", and if it doesn\'t work, try "indirect")?',
