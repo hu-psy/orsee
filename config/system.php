@@ -239,6 +239,13 @@ $system__options_general[]=array(
 );
 
 $system__options_general[]=array(
+'option_name'=>'use_first_experimenters_mail_as_sender_mail',
+'option_text'=>'Use the email address of the first experimenter as sender mail',
+'type'=>'select_yesno_switchy',
+'default_value'=>'y'
+);
+
+$system__options_general[]=array(
 'option_name'=>'email_sendmail_type',
 'option_text'=>'Type of sending emails (see Manual,<BR>
                 try "direct", and if it doesn\'t work, try "indirect")?',
