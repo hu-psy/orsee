@@ -1,10 +1,6 @@
 /* set new experiment types */
-DELETE FROM `pesa2019`.`or_experiment_types` WHERE (`exptype_id` = '2');
-DELETE FROM `pesa2019`.`or_experiment_types` WHERE (`exptype_id` = '1');
-DELETE FROM `pesa2019`.`or_experiment_types` WHERE (`exptype_id` = '3');
-DELETE FROM `pesa2019`.`or_experiment_types` WHERE (`exptype_id` = '4');
-DELETE FROM `pesa2019`.`or_experiment_types` WHERE (`exptype_id` = '5');
-DELETE FROM `pesa2019`.`or_experiment_types` WHERE (`exptype_id` = '6');
+truncate table pesa2019.or_experiment_types;
+
 INSERT INTO `pesa2019`.`or_experiment_types` (`exptype_id`, `exptype_name`, `exptype_description`, `exptype_mapping`, `enabled`) VALUES ('1', 'LaboratoryWOP', 'normal laboratory eyperiments without payment', 'laboratory', 'y');
 INSERT INTO `pesa2019`.`or_experiment_types` (`exptype_id`, `exptype_name`, `exptype_description`, `exptype_mapping`, `enabled`) VALUES ('2', 'LaboratoryP', 'normal laboratory eyperiments with payment', 'laboratory', 'y');
 INSERT INTO `pesa2019`.`or_experiment_types` (`exptype_id`, `exptype_name`, `exptype_description`, `exptype_mapping`, `enabled`) VALUES ('3', 'Online-SurveyWOP', 'online survey experiments without payment', 'online-survey', 'y');
