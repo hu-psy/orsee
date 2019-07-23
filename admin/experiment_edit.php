@@ -233,7 +233,12 @@ if ($proceed) {
                 <TD><INPUT name="sender_mail" type="text" size=40 maxlength=60
                     value="';
                     if ($edit['sender_mail']) echo stripslashes($edit['sender_mail']);
-                        else echo $settings['support_mail'];
+		    # TODO: make this a option
+		    #  former default:
+                        # else echo $settings['support_mail'];
+		    else
+			$admin=orsee_db_load_array("admin",$expadmindata['admin_id'],"admin_id");
+			echo $admin['email'];
                     echo '"></TD>
             </TR>';
 
