@@ -66,8 +66,7 @@ if ($proceed) {
             message(lang('error_at_least_one_experimenter_mail_required'));
             $continue=false;
         }
-
-
+	
         if ($continue) {
 
             if (!isset($_REQUEST['experiment_finished']) ||!$_REQUEST['experiment_finished']) $_REQUEST['experiment_finished']="n";
@@ -211,7 +210,8 @@ if ($proceed) {
                                 </TD>
                                 <TD>
                     <INPUT name="access_restricted" type=checkbox value="y"';
-    if ($edit['access_restricted']=="y") echo " CHECKED";
+    if ($edit['access_restricted']=="y" || ($settings['default_experiment_restriction']=="y" && $edit['access_restricted']==""))
+	echo " CHECKED";
     echo '>
                     </TD>
                         </TR>';
