@@ -16,6 +16,7 @@ pesa_transfer_impressum.sql
 pesa_transfer_subpools.sql
 pesa_transfer_mail.sql
 pesa_transfer_welcome.sql
+pesa_set_new_experiment_types.sql
 pesa_add_new_options.sql)
 
 # transfering or_admin, this requires a .htaccess file
