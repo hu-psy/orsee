@@ -232,13 +232,14 @@ if ($proceed) {
                 <TD>'.lang('email_sender_address').':</TD>
                 <TD><INPUT name="sender_mail" type="text" size=40 maxlength=60
                     value="';
-                    if ($edit['sender_mail']) echo stripslashes($edit['sender_mail']);
-		    # TODO: make this a option
-		    #  former default:
-                        # else echo $settings['support_mail'];
-		    else
+		    if ($edit['sender_mail']) {
+		        echo stripslashes($edit['sender_mail']);
+		    } else if($settings['use_experimenters_mail_as_default']=='y') {
 			$admin=orsee_db_load_array("admin",$expadmindata['admin_id'],"admin_id");
 			echo $admin['email'];
+		    } else {
+			echo $settings['support_mail'];
+		    }
                     echo '"></TD>
             </TR>';
 
