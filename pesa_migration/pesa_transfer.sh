@@ -19,7 +19,8 @@ pesa_transfer_welcome.sql
 pesa_fix_email.sql
 pesa_fix_labs.sql
 pesa_set_new_experiment_types.sql
-pesa_add_new_options.sql)
+pesa_add_new_options.sql
+pesa_update_error_message.sql)
 
 # transfering or_admin, this requires a .htaccess file
 ./pesa_transfer_admin.sh
