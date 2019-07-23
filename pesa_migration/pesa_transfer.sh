@@ -1,4 +1,4 @@
-#default_experiment_restriction!/bin/bash
+#!/bin/bash
 array=(pesa_transfer_experiment_types.sql
 pesa_transfer_experiments.sql
 pesa_transfer_sessions.sql
