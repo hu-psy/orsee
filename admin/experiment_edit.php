@@ -51,7 +51,7 @@ if ($proceed) {
         }
 
         if ($settings['enable_editing_of_experiment_sender_email']=='y' && check_allow('experiment_change_sender_address')) {
-            if (!preg_match("/^[^@ \t\r\n]+@[-_0-9a-zA-Z]+\.[^@ \t\r\n]+$/",$_REQUEST['sender_mail'])) {
+            if (!preg_match("/^[^@ \t\r\n]+@(hu-berlin|psychologie.hu-berlin)\.de$/",$_REQUEST['sender_mail'])) {
                 message(lang('error_no_valid_sender_mail'));
                 $continue=false;
             }
