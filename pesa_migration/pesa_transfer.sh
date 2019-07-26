@@ -1,3 +1,14 @@
+old_db=$1
+new_db=$2
+
+if [ -z "$old_db" ]; then
+    old_db="pesa"
+fi
+
+if [ -z "$new_db" ]; then
+    new_db="pesa2019"
+fi
+
 #!/bin/bash
 array=(pesa_transfer_experiment_types.sql
 pesa_transfer_experiments.sql
@@ -25,11 +36,11 @@ pesa_add_new_options.sql
 pesa_update_error_message.sql)
 
 # transfering or_admin, this requires a .htaccess file
-./pesa_transfer_admin.sh
+cat ./pesa_transfer_admin.sh | sed 's/##new_db##/$new_db/g' pesa_transfer_admin.sh | sed 's/##old_db##/$old_db/g' | bash
 
 for sql_file in ${!array[@]}
 do
 	#echo "$sql_file ${array[$sql_file]}"
 	echo ${array[$sql_file]}
-	mysql < ${array[$sql_file]}
+	cat ${array[$sql_file]} | sed 's/##new_db##/$new_db/g' pesa_transfer_admin.sh | sed 's/##old_db##/$old_db/g' | mysql
 done
