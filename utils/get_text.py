@@ -13,11 +13,11 @@ def main(host, user, passwd, db, file_name):
 
     try:
         cur = con.cursor()
-        cur.execute("SELECT lang_id, content_name, en, de from or_lang where content_type='mail'")
+        cur.execute("SELECT lang_id, content_type, content_name, en, de from or_lang where content_type='mail' or content_type='faq_question' or content_type='faq_answer' or content_type='public_content'")
 
         data = []
-        for (lang_id, content_name, en, de) in cur:
-            data.append({'id': lang_id, 'name': content_name, 'en': en, 'de': de})
+        for (lang_id, content_type, content_name, en, de) in cur:
+            data.append({'id': lang_id, 'type': content_type, 'name': content_name, 'en': en, 'de': de})
 
         with open(file_name, 'w') as fp:
             json.dump(data, fp, indent=4)
