@@ -37,6 +37,11 @@ if ($proceed) {
     if ((!(isset($expadmindata['adminname']) && $expadmindata['adminname'])) && $document!="admin_login.php") {
         redirect ("admin/admin_login.php?requested_url=".urlencode($requested_url));
     }
+
+    // enforce privacy policy acceptance for admins
+    if($document!="admin_login.php" && $document!="privacy.php" && $expadmindata['privacy_policy_accepted']=='n'){
+        redirect ("admin/privacy.php?requested_url=".urlencode($requested_url));
+    }
 }
 
 if ($proceed) {
