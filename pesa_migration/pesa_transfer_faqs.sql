@@ -1,4 +1,6 @@
 truncate table ##new_db##.or_faqs;
+delete from ##new_db##.or_lang where content_type='faq_question' or content_type='faq_answer';
+
 insert into ##new_db##.or_faqs(faq_id, evaluation) 
 select faq_id, evaluation from ##old_db##.or_faqs;
 
