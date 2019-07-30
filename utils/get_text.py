@@ -4,7 +4,7 @@ import argparse
 import json
 
 
-def main(host, user, passwd, db):
+def main(host, user, passwd, db, file_name):
     try:
         con = mdb.connect(host, user, passwd, db)
     except mdb.Error as e:
@@ -19,7 +19,7 @@ def main(host, user, passwd, db):
         for (lang_id, content_name, en, de) in cur:
             data.append({'id': lang_id, 'name': content_name, 'en': en, 'de': de})
 
-        with open('emails.json', 'w') as fp:
+        with open(file_name, 'w') as fp:
             json.dump(data, fp, indent=4)
 
     except mdb.Error as e:
@@ -37,5 +37,6 @@ if __name__ == "__main__":
     parser.add_argument('passwd',  help="user's password")
     parser.add_argument('--host', dest='host',  default='localhost', help='host of database server')
     parser.add_argument('--db', dest='db', default='pesa2019', help='database to use')
+    parser.add_argument('--file', dest='file_name', default='text.json', help='output file')
     args = parser.parse_args()
-    main(args.host, args.user, args.passwd, args.db)
+    main(args.host, args.user, args.passwd, args.db, args.file_name)
