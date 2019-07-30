@@ -1,4 +1,4 @@
-insert into pesa2019.or_lang (lang_id, enabled, order_number, content_type, content_name, en, de) 
+insert into ##new_db##.or_lang (lang_id, enabled, order_number, content_type, content_name, en, de) 
 select max(lang_id)+1 ,'y', -1, 'mail', 'admin_experiment_registration', 'Hello!
 
 A participant has registered for the following experiment:
@@ -27,9 +27,9 @@ Mit freundlichen Gruessen
 
 PESA2019
 '
-from pesa2019.or_lang;
+from ##new_db##.or_lang;
 
-insert into pesa2019.or_lang (lang_id, enabled, order_number, content_type, content_name, en, de) 
+insert into ##new_db##.or_lang (lang_id, enabled, order_number, content_type, content_name, en, de) 
 select max(lang_id)+1 ,'y', -1, 'mail', 'admin_experiment_enrolment_cancellation', 'Hello!
 
 A participant has *canceled* their enrolment for the following experiment session:
@@ -59,4 +59,4 @@ Mit freundlichen Gruessen
 
 PESA2019
 '
-from pesa2019.or_lang;
+from ##new_db##.or_lang;

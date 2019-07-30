@@ -1,1 +1,1 @@
-UPDATE `pesa2019`.`or_lang` SET `en` = 'The sender email address seems not to be valid. Please use a HU email address.', `de` = 'Die Absenderadresse scheint nicht korrekt zu sein. Bitte nutzen Sie eine E-Mail-Adresse der HU.' WHERE (`lang_id` = '130333');
+UPDATE `##new_db##`.`or_lang` SET `en` = 'The sender email address seems not to be valid. Please use a HU email address.', `de` = 'Die Absenderadresse scheint nicht korrekt zu sein. Bitte nutzen Sie eine E-Mail-Adresse der HU.' WHERE (`lang_id` = '130333');
