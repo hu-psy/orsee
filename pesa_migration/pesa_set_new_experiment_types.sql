@@ -34,3 +34,19 @@ update ##new_db##.or_experiments set new_subs = concat(new_subs,',|4|') where ex
 update ##new_db##.or_experiments set experiment_ext_type = substring(new_subs, 2);
 
 alter table ##new_db##.or_experiments drop column new_subs;
+
+delete from ##new_db##.or_lang where content_type='experiment_type';
+
+insert into ##new_db##.or_lang (lang_id, enabled, order_number, content_type, content_name, en, de)
+select max(lang_id)+1, 'y','-1', 'experiment_type', 1, 'laboratory experiments without payment','Laborexperimente ohne Bezahlung' from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang (lang_id, enabled, order_number, content_type, content_name, en, de)
+select max(lang_id)+1, 'y','-1', 'experiment_type', 2, 'laboratory experiments with payment','Laborexperimente mit Bezahlung' from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang (lang_id, enabled, order_number, content_type, content_name, en, de)
+select max(lang_id)+1, 'y','-1', 'experiment_type', 3, 'online survey experiments without payment','Internt-Experimente ohne Bezahlung' from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang (lang_id, enabled, order_number, content_type, content_name, en, de)
+select max(lang_id)+1, 'y','-1', 'experiment_type', 4, 'online survey experiments with payment','Internet-Experimente mit Bezahlung' from ##new_db##.or_lang;
+
+update ##new_db##.or_subpools set experiment_types='|1|,|2|,|3|,|4|' where (subpool_id = '1');
