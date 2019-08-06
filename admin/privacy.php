@@ -9,17 +9,16 @@ if ($proceed) {
                 $done=orsee_db_save_array(['privacy_policy_accepted' => 'y'],"admin",$expadmindata['admin_id'],"admin_id");
 		$expadmindata['privacy_policy_accepted'] = 'y';
         	$_SESSION['expadmindata']=$expadmindata;
-		// TODO: redirect to wanted page if possible
+		if (isset($_REQUEST['requested_url']) && $_REQUEST['requested_url']) redirect($_REQUEST['requested_url']);
 		redirect("admin/index.php");
 	} else {
 		echo '<center><BR><BR>';
-		// TODO: remember requested url for later redirection
-		//if(isset($_REQUEST['requested_url']) && $_REQUEST['requested_url']) {
-                //	$add="?requested_url=".urlencode($_REQUEST['requested_url']);
-		//	echo '<FORM action='.thisdoc().$add.'>';
-		//} else {
-			echo '<FORM action='.thisdoc().'>';
-		//}
+		if(isset($_REQUEST['requested_url']) && $_REQUEST['requested_url']) {
+			$add="?requested_url=".urlencode($_REQUEST['requested_url']);
+			echo '<FORM action='.thisdoc().$add.' method="post">';
+		} else {
+			echo '<FORM action='.thisdoc().' method="post">';
+		}
 		echo '<TABLE class="or_panel" style="width: 80%">';
 		    echo '<TR><TD>
 		        <TABLE width="100%" border=0 class="or_panel_title"><TR>
