@@ -38,11 +38,11 @@ pesa_extend_admin.sql
 pesa_update_error_message.sql)
 
 # transfering or_admin, this requires a .htaccess file
-cat ./pesa_transfer_admin.sh | sed 's/##new_db##/$new_db/g' | sed 's/##old_db##/$old_db/g' | bash
+cat ./pesa_transfer_admin.sh | sed "s/##new_db##/$new_db/g" | sed "s/##old_db##/$old_db/g" | bash
 
 for sql_file in ${!array[@]}
 do
 	#echo "$sql_file ${array[$sql_file]}"
 	echo ${array[$sql_file]}
-	cat ${array[$sql_file]} | sed 's/##new_db##/$new_db/g' | sed 's/##old_db##/$old_db/g' | mysql
+	cat ${array[$sql_file]} | sed "s/##new_db##/$new_db/g" | sed "s/##old_db##/$old_db/g" | mysql
 done
