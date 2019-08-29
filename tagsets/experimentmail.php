@@ -908,7 +908,11 @@ function experimentmail__experimenter_notification_mail($participant,$session, $
             $pform_fields=participant__load_participant_email_fields($maillang);
             $experimentmail=experimentmail__fill_participant_details($participant,$pform_fields);
             $experimentmail=experimentmail__get_experiment_registration_details($experimentmail,$experiment,$session,$lab);
-            $mailtext['subject']=load_language_symbol('enrolment_email_subject',$maillang);
+            if($type == "admin_experiment_registration") {
+                $mailtext['subject']=load_language_symbol('enrolment_email_subject',$maillang);
+            } else {
+                $mailtext['subject']=load_language_symbol('enrolment_cancellation_email_subject',$maillang);
+            }
             $mailtext['body']=load_mail($type, $maillang);
             $message=process_mail_template($mailtext['body'],$experimentmail);
     	    $message=$message.experimentmail__get_admin_footer($maillang,$admin);
