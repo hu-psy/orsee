@@ -51,7 +51,7 @@ if ($proceed) {
         }
 
         if ($settings['enable_editing_of_experiment_sender_email']=='y' && check_allow('experiment_change_sender_address')) {
-            if (!preg_match("/^[^@ \t\r\n]+@[-_0-9a-zA-Z]+\.[^@ \t\r\n]+$/",$_REQUEST['sender_mail'])) {
+            if (!preg_match("/^[^@ \t\r\n]+@(hu-berlin|psychologie.hu-berlin)\.de$/",$_REQUEST['sender_mail'])) {
                 message(lang('error_no_valid_sender_mail'));
                 $continue=false;
             }
@@ -232,8 +232,14 @@ if ($proceed) {
                 <TD>'.lang('email_sender_address').':</TD>
                 <TD><INPUT name="sender_mail" type="text" size=40 maxlength=60
                     value="';
-                    if ($edit['sender_mail']) echo stripslashes($edit['sender_mail']);
-                        else echo $settings['support_mail'];
+		    if ($edit['sender_mail']) {
+		        echo stripslashes($edit['sender_mail']);
+		    } else if($settings['use_experimenters_mail_as_default']=='y') {
+			$admin=orsee_db_load_array("admin",$expadmindata['admin_id'],"admin_id");
+			echo $admin['email'];
+		    } else {
+			echo $settings['support_mail'];
+		    }
                     echo '"></TD>
             </TR>';
 

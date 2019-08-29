@@ -1,5 +1,5 @@
-/* delete defaul mail texts which are also in old pesa */
-delete from pesa2019.or_lang where (content_type = "mail" and (
+/* delete defaul mail texts which are also in old ##old_db## */
+delete from ##new_db##.or_lang where (content_type = "mail" and (
 content_name = 'admin_mail_footer' 
 or content_name = 'admin_registration_notice' 
 or content_name = 'admin_session_reminder_notice' 
@@ -16,11 +16,11 @@ or content_name = 'public_participant_exclusion'
 or content_name = 'public_noshow_warning'));
 
 /* increase index to prevent possible */
-update pesa.or_lang set lang_id = lang_id + 220004 where content_type = "mail";
+update ##old_db##.or_lang set lang_id = lang_id + 220004 where content_type = "mail";
 
 /* insert old mail texts */
-insert into pesa2019.or_lang(lang_id, enabled, content_type, content_name, en, de) 
-( select lang_id, enabled, content_type, content_name, en, de from pesa.or_lang
+insert into ##new_db##.or_lang(lang_id, enabled, content_type, content_name, en, de) 
+( select lang_id, enabled, content_type, content_name, en, de from ##old_db##.or_lang
 where content_type = "mail" and (
 content_name = 'admin_mail_footer' 
 or content_name = 'admin_registration_notice' 

@@ -16,8 +16,8 @@ do
 done
 or_clause="$or_clause)"
 
-mysql -Nse "insert into pesa2019.or_admin(admin_id, fname, lname, email, adminname, admin_type, experimenter_list, language, get_calendar_mail, get_statistics_mail) 
-                                select admin_id, fname, lname, email, adminname, admin_type, experimenter_list, language, get_calendar_mail, get_statistics_mail from pesa.or_admin 
+mysql -Nse "insert into ##new_db##.or_admin(admin_id, fname, lname, email, adminname, admin_type, experimenter_list, language, get_calendar_mail, get_statistics_mail) 
+                                select admin_id, fname, lname, email, adminname, admin_type, experimenter_list, language, get_calendar_mail, get_statistics_mail from ##old_db##.or_admin 
                                     where fname <> 'Warning' 
                                     and admin_id > 1
                                     and ${or_clause};"

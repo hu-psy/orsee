@@ -892,6 +892,35 @@ function experimentmail__experiment_registration_mail($participant,$session) {
     experimentmail__mail($participant['email'],$mailtext['subject'],$message,$headers);
 }
 
+// TODO: like experimentmail__experiment_registration_mail but sending a mail to the experimenter, roughly the same content
+function experimentmail__experimenter_notification_mail($participant,$session, $type) {
+    global $lang, $settings;
+    // load experiment
+    $experiment=orsee_db_load_array("experiments",$session['experiment_id'],"experiment_id");
+    $experimenters=db_string_to_id_array($experiment['experimenter_mail']);
+
+    foreach ($experimenters as $experimenter) {
+        $admin=orsee_db_load_array("admin",$experimenter,"admin_id");
+        if (isset($admin['admin_id'])) {
+    	    $maillang=experimentmail__get_language($admin['language']);
+
+            $lab=laboratories__get_laboratory_text($session['laboratory_id'],$maillang);
+            $pform_fields=participant__load_participant_email_fields($maillang);
+            $experimentmail=experimentmail__fill_participant_details($participant,$pform_fields);
+            $experimentmail=experimentmail__get_experiment_registration_details($experimentmail,$experiment,$session,$lab);
+            $mailtext['subject']=load_language_symbol('enrolment_email_subject',$maillang);
+            $mailtext['body']=load_mail($type, $maillang);
+            $message=process_mail_template($mailtext['body'],$experimentmail);
+    	    $message=$message.experimentmail__get_admin_footer($maillang,$admin);
+
+            $sendermail=experimentmail__get_sender_email($experiment);
+            $headers="From: ".$sendermail."\r\n";
+
+            experimentmail__mail($admin['email'],$mailtext['subject'],$message,$headers);
+        }
+    }
+}
+
 function experimentmail__experiment_cancellation_mail($participant,$session) {
     global $lang, $settings;
     // load experiment
