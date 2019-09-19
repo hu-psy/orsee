@@ -28,6 +28,7 @@ pesa_transfer_subpools.sql
 pesa_transfer_mail.sql
 pesa_transfer_welcome.sql
 pesa_set_options.sql
+pesa_set_rights.sql
 pesa_add_mail_templates.sql
 pesa_fix_email.sql
 pesa_fix_labs.sql
