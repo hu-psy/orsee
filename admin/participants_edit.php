@@ -59,7 +59,7 @@ if ($proceed) {
                 elseif ($osid_e == 'n' && $sid_e=='y') $participant['deletion_time']=0;
             }
 
-            // TODO: fix subscriptions using new form
+            $participant['subscriptions'] = participant__subscriptions_to_ext_experiment_id_db_string($participant['subscriptions']);
             $done=orsee_db_save_array($participant,"participants",$participant['participant_id'],"participant_id");
             if ($done) message(lang('changes_saved'));
 
