@@ -549,12 +549,12 @@ function participant__subscriptions_form_field($subpool_id,$varname,$value) {
     //       and general/participant_edit.php before the entry in the database is done
     //       this must be manually adapted if external experiment type changes
     $out.='<INPUT type="checkbox" name="'.$varname.'[only_payment]" value="only_payment"';
-    if (in_array("only_payment",$checked) || (!in_array("1", $checked) && !in_array("3", $checked))) $out.=" CHECKED";
+    if (in_array("only_payment",$checked) || (!in_array("1", $checked) && !in_array("3", $checked) && (in_array("2",$checked) || in_array("4",$checked)))) $out.=" CHECKED";
     $out.='> only payed experiments'; // TODO: use lang symbol
     $out.='<BR>';
 
     $out.='<INPUT type="checkbox" name="'.$varname.'[only_online]" value="only_online"';
-    if (in_array("only_online",$checked) || (!in_array("1", $checked) && !in_array("2", $checked))) $out.=" CHECKED";
+    if (in_array("only_online",$checked) || (!in_array("1", $checked) && !in_array("2", $checked) && (in_array("3",$checked) || in_array("4",$checked)))) $out.=" CHECKED";
     $out.='> only online experiments'; // TODO: use lang symbol
     $out.='<BR>';
     return $out;
