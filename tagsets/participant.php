@@ -305,10 +305,11 @@ function participantform__check_fields($edit,$admin) {
     if (!isset($_REQUEST['subscriptions']) || !is_array($_REQUEST['subscriptions'])) $_REQUEST['subscriptions']=array();
     $_REQUEST['subscriptions']=id_array_to_db_string($_REQUEST['subscriptions']);
     $edit['subscriptions']=$_REQUEST['subscriptions'];
-    if(!$edit['subscriptions']) {
-        $errors_dataform[]='subscriptions';
-        message(lang('at_least_one_exptype_has_to_be_selected'));
-    }
+    // HACK: dont check if subscriptions where checked in the form because nothing checked means "subscribe to all experiment types"
+    //if(!$edit['subscriptions']) {
+    //    $errors_dataform[]='subscriptions';
+    //    message(lang('at_least_one_exptype_has_to_be_selected'));
+    //}
 
     return $errors_dataform;
 }
@@ -536,15 +537,40 @@ function participant__subscriptions_form_field($subpool_id,$varname,$value) {
     $subpool=subpools__get_subpool($subpool_id);
     $subpool_exptypes=db_string_to_id_array($subpool['experiment_types']);
     $out='';
-    foreach($subpool_exptypes as $exptype_id) {
-        $out.='<INPUT type="checkbox" name="'.$varname.'['.$exptype_id.']"
-                                        value="'.$exptype_id.'"';
-        if (in_array($exptype_id,$checked)) $out.=" CHECKED";
-        $out.='>'.$exptypes[$exptype_id][lang('lang')];
-        $out.='<BR>
-                     ';
-    }
+    //foreach($subpool_exptypes as $exptype_id) {
+    //    $out.='<INPUT type="checkbox" name="'.$varname.'['.$exptype_id.']"
+    //                                    value="'.$exptype_id.'"';
+    //    if (in_array($exptype_id,$checked)) $out.=" CHECKED";
+    //    $out.='>'.$exptypes[$exptype_id][lang('lang')];
+    //    $out.='<BR>
+    //                 ';
+    //}
+    // HACK: the real subscriptions will be determined in general/participant_create.php
+    //       and general/participant_edit.php before the entry in the database is done
+    //       this must be manually adapted if external experiment type changes
+    $out.='<INPUT type="checkbox" name="'.$varname.'[only_payment]" value="only_payment"';
+    if (in_array("only_payment",$checked)) $out.=" CHECKED";
+    $out.='> only payed experiments'; // TODO: use lang symbol
+    $out.='<BR>';
+
+    $out.='<INPUT type="checkbox" name="'.$varname.'[only_online]" value="only_online"';
+    if (in_array("only_online",$checked)) $out.=" CHECKED";
+    $out.='> only online experiments'; // TODO: use lang symbol
+    $out.='<BR>';
     return $out;
+}
+
+function participant__subscriptions_to_ext_experiment_id_db_string($subscriptions) {
+    // HACK: the external experiment types are directly used
+    if(!preg_match("/payment/", $subscriptions) && !preg_match("/online/", $subscriptions)) {
+        return '|1|,|2|,|3|,|4|';
+    } elseif(!preg_match("/payment/", $subscriptions)){
+        return '|3|,|4|';
+    } elseif(!preg_match("/online/", $subscriptions)){
+        return '|2|,|4|';
+    }
+
+    return '|4|';
 }
 
 function participant__rules_signed_form_field($current_rules_signed="") {

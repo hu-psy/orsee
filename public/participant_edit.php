@@ -37,6 +37,7 @@ if ($proceed) {
 
             $participant['last_profile_update']=time();
 
+            // TODO: fix subscriptions using new form
             $done=orsee_db_save_array($participant,"participants",$participant['participant_id'],"participant_id");
 
             if ($done) {
