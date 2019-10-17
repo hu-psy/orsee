@@ -1,5 +1,5 @@
 insert into ##new_db##.or_lang (lang_id, enabled, order_number, content_type, content_name, en, de)
-select max(lang_id)+1 ,'y', -1, 'lang', 'participant_form_only_payment_description', "only payed experiments (you won't receive any invitations for experiments which compensate non-monetarily, e.g. with feedback)", 'nur bezahlte Experimente (Sie erhalten keine Einladungen für Experimente, die nicht monetär entschädigen, z.B. durch Feedback'
+select max(lang_id)+1 ,'y', -1, 'lang', 'participant_form_only_payment_description', "only payed experiments (you won't receive any invitations for experiments which compensate non-monetarily, e.g. with feedback or VP credits)", 'nur bezahlte Experimente (Sie erhalten keine Einladungen für Experimente, die nicht monetär entschädigen, z.B. durch Feedback oder VP-Marken'
 from ##new_db##.or_lang;
 
 insert into ##new_db##.or_lang (lang_id, enabled, order_number, content_type, content_name, en, de)
