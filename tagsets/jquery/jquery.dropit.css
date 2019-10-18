@@ -43,6 +43,14 @@
 	-moz-box-shadow: 0px 1px 3px rgba(0,0,0,0.15);
 	box-shadow: 0px 1px 3px rgba(0,0,0,0.15);
 }
+.query_add ul.dropit-submenu > li { 
+	border-style: none none solid none;
+	border-width: 1px;
+	border-color: #B2B2B2
+}
+.query_add ul.dropit-submenu > li:last-child {
+	border: none;
+}
 .query_add ul.dropit-submenu a, .query_add ul.dropit-submenu a:visited {
 	display: block;
 	font-size: 14px;
