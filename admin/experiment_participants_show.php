@@ -201,6 +201,11 @@ if ($proceed) {
                             AND participant_id= :participant_id";
                     $done=or_query($query,$pars);
 
+                    // reset noshow_warning_sent
+                    $pars=array(':session_id'=>$session_id);
+                    $query="UPDATE ".table('sessions')." SET noshow_warning_sent='n' WHERE session_id= :session_id";
+                    $done=or_query($query,$pars);
+
                     // update rules signed data
                     if($settings['enable_rules_signed_tracking']=='y') {
                         $pars=array();

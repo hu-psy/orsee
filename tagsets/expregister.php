@@ -280,9 +280,12 @@ function expregister__register($participant,$session) {
     $pars=array(':session_id'=>$session['session_id'],
                 ':experiment_id'=>$session['experiment_id'],
                 ':participant_id'=>$participant['participant_id']);
+    // HACK: set participated as default
+    //       so an experimenter doesn't have to have set the participant to "participated" after a session
+    //       the experimenter only need to modify it if the participant didn't appear or was turned-back
     $query="UPDATE ".table('participate_at')."
             SET session_id=:session_id,
-            pstatus_id=0
+            pstatus_id=1
             WHERE experiment_id=:experiment_id
             AND participant_id=:participant_id";
     $done=or_query($query,$pars);
