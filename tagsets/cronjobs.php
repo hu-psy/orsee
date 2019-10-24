@@ -24,6 +24,7 @@ function cron__run_cronjobs() {
 
     // cronjobs will be executed in that order ...
     $cronjobs=array('check_for_registration_end',
+	    'check_for_finished_sessions',
             'check_for_session_reminders',
             'apply_permanent_queries',
             'process_mail_queue',
@@ -406,6 +407,26 @@ function cron__check_for_noshow_warnings() {
         $done2=experimentmail__set_noshow_warnings_checked($line['session_id']);
     }
     return $mess;
+}
+
+function cron__check_for_finished_sessions(){
+    $now=time();
+    $query="SELECT ".table('sessions').".*
+            FROM ".table('sessions')."
+            WHERE session_status='live'";
+    $result=or_query($query);
+
+    $number = 0;
+    while ($line=pdo_fetch_assoc($result)) {
+        // session finished?
+	$session_end = ortime__sesstime_to_unixtime($line['session_start']) + $line['session_duration_hour'] * 60 * 60 + $line['session_duration_minute'] * 60;
+        if ($session_end < $now) {
+	    $query = "UPDATE ".table('sessions')." SET session_status = 'completed' WHERE session_id = '" . $line['session_id'] . "'";
+	    $done = or_query($query);
+	    $number++;
+	}
+    }
+    return $number . " sessions closed";
 }
 
 function cron__check_for_participant_exclusion() {
