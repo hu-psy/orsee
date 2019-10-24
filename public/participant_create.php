@@ -186,6 +186,7 @@ if ($proceed) {
             $participant['status_id']=0;
             $participant['subpool_id']=$_SESSION['subpool_id'];
             if (!isset($participant['language']) || !$participant['language']) $participant['language']=$settings['public_standard_language'];
+            $participant['subscriptions'] = participant__subscriptions_to_ext_experiment_id_db_string($participant['subscriptions']);
             $done=orsee_db_save_array($participant,"participants",$participant['participant_id'],"participant_id");
             if ($done) {
                 log__participant("subscribe",$participant['lname'].', '.$participant['fname']);

@@ -51,7 +51,7 @@ function language__get_item($content_type,$content_name,$language="") {
     $pars=array(':content_type'=>$content_type,':content_name'=>$content_name);
     $query="SELECT * from ".table('lang')." WHERE content_type= :content_type AND content_name= :content_name";
     $line=orsee_query($query,$pars);
-    if (isset($line[$language])) return stripslashes($line[$language]);
+    if (isset($line[$this_lang])) return stripslashes($line[$this_lang]);
     else return false;
 }
 
