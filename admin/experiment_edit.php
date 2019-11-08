@@ -186,35 +186,38 @@ if ($proceed) {
             </TR>';
     // TODO: add language symbol
     $lang_online_link = lang('online_link');
-    $lang_online_start = lang('online_start');
-    $lang_online_stop = lang('online_stop');
+    $lang_online_begin = lang('online_begin');
+    $lang_online_end = lang('online_end');
     echo <<<HTML
-            <TR class="online_exp" style="display: none;">
+            <TR class="online_exp">
                 <TD> ${lang_online_link}: </TD>
-                <TD> <INPUT type="text" name="online_link"> </TD>
+                <TD> <INPUT type="text" name="link" value="${edit['link']}"> </TD>
             </TR>
-            <TR class="online_exp" style="display: none;">
-                <TD> ${lang_online_start}: </TD>
-                <TD> <INPUT class="online_exp" type="date" name="online_start"> </TD>
+            <TR class="online_exp">
+                <TD> ${lang_online_begin}: </TD>
+                <TD> <INPUT type="date" name="begin" value="${edit['begin']}"> </TD>
             </TR>
-            <TR class="online_exp" style="display: none;">
-                <TD> ${lang_online_stop}: </TD>
-                <TD> <INPUT class="online_exp" type="date" name="online_end"> </TD>
+            <TR class="online_exp">
+                <TD> ${lang_online_end}: </TD>
+                <TD> <INPUT type="date" name="end" value="${edit['end']}"> </TD>
             </TR>
 HTML;
     echo <<<JAVASCRIPT
             <script>
             $(document).ready(function(){
-                $("SELECT[name='experiment_show_type']").change(function(){
+                function hide_n_show() {
                     var sel = document.getElementsByName("experiment_show_type")[0];
-                    console.log(sel)
                     var v = sel.options[sel.selectedIndex].value;
                     if(v.includes('internet') || v.includes('online-survey')){
                         $(".online_exp").show();
                     } else {
                         $(".online_exp").hide();
                     }
-                });
+                }
+
+                hide_n_show();
+
+                $("SELECT[name='experiment_show_type']").change(hide_n_show);
             });
             </script>
 JAVASCRIPT;
