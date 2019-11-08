@@ -67,6 +67,26 @@ if ($proceed) {
             $continue=false;
         }
 	
+        $exptypes=explode(",",$_REQUEST['experiment_show_type']);
+        $_REQUEST['experiment_type']=trim($exptypes[0]);
+        $_REQUEST['experiment_ext_type']=trim($exptypes[1]);
+
+        // TODO: add lang symbols
+        if($_REQUEST['experiment_type'] != 'laboratory') {
+            if (!$_REQUEST['link']) {
+                message(lang('error_link_required_for_online_experiments'));
+                $continue=false;
+            }
+            if (!$_REQUEST['begin']) {
+                message(lang('error_begin_required_for_online_experiments'));
+                $continue=false;
+            }
+            if (!$_REQUEST['end']) {
+                message(lang('error_end_required_for_online_experiments'));
+                $continue=false;
+            }
+        }
+
         if ($continue) {
 
             if (!isset($_REQUEST['experiment_finished']) ||!$_REQUEST['experiment_finished']) $_REQUEST['experiment_finished']="n";
@@ -76,12 +96,6 @@ if ($proceed) {
             if (!isset($_REQUEST['hide_in_cal']) ||!$_REQUEST['hide_in_cal']) $_REQUEST['hide_in_cal']="n";
 
             if (!isset($_REQUEST['access_restricted']) ||!$_REQUEST['access_restricted']) $_REQUEST['access_restricted']="n";
-
-
-
-            $exptypes=explode(",",$_REQUEST['experiment_show_type']);
-            $_REQUEST['experiment_type']=trim($exptypes[0]);
-            $_REQUEST['experiment_ext_type']=trim($exptypes[1]);
 
             $edit=$_REQUEST;
 
@@ -115,7 +129,7 @@ if ($proceed) {
                 'experiment_id','sender_mail','experiment_show_type','access_restricted',
                 'experiment_finished','hide_in_stats','hide_in_cal',
                 'ethics_by','ethics_number','ethics_exempt','ethics_expire_date',
-                'payment_types','payment_budgets');
+                'payment_types','payment_budgets','link','begin','end');
         foreach ($formvarnames as $fvn) {
             if (!isset($edit[$fvn])) $edit[$fvn]="";
         }
