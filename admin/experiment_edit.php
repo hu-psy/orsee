@@ -12,6 +12,9 @@ if ($proceed) {
         $allow=check_allow('experiment_edit','experiment_show.php?experiment_id='.$_REQUEST['experiment_id']);
         if ($proceed) {
             $edit=orsee_db_load_array("experiments",$_REQUEST['experiment_id'],"experiment_id");
+            if($edit['experiment_type'] != 'laboratory'){
+                $edit = array_merge($edit, orsee_db_load_array("online_experiments",$_REQUEST['experiment_id'],"experiment_id"));
+            }
             $edit['experiment_show_type']=$edit['experiment_type'].','.$edit['experiment_ext_type'];
             if (!check_allow('experiment_restriction_override'))
                 check_experiment_allowed($edit,"admin/experiment_show.php?experiment_id=".$edit['experiment_id']);
