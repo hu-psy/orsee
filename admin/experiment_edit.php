@@ -101,6 +101,10 @@ if ($proceed) {
 
             $done=orsee_db_save_array($edit,"experiments",$edit['experiment_id'],"experiment_id");
 
+            if($_REQUEST['experiment_type'] != 'laboratory') {
+                $done = $done and orsee_db_save_array($edit,"online_experiments",$edit['experiment_id'],"experiment_id");
+            }
+
             if ($done) {
                 message (lang('changes_saved'));
                 redirect ("admin/experiment_edit.php?experiment_id=".$edit['experiment_id']);
