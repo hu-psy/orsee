@@ -102,18 +102,23 @@ if ($proceed) {
 
             $edit=$_REQUEST;
 
-            $done=orsee_db_save_array($edit,"experiments",$edit['experiment_id'],"experiment_id");
+            $successful=orsee_db_save_array($edit,"experiments",$edit['experiment_id'],"experiment_id");
 
-            if($_REQUEST['experiment_type'] != 'laboratory') {
-                $done = $done and orsee_db_save_array($edit,"online_experiments",$edit['experiment_id'],"experiment_id");
+            if($successful and $_REQUEST['experiment_type'] != 'laboratory') {
+                $successful = orsee_db_save_array($edit,"online_experiments",$edit['experiment_id'],"experiment_id");
+                if(! $successful) {
+                    $successful = orsee_db_load_array("online_experiments",$_REQUEST['experiment_id'],"experiment_id");
+                    if($successful === False) { // not in db so it is a new experiment
+                        orsee_db_delete_array("experiments",$_REQUEST['experiment_id'],"experiment_id");
+                    }
+                }
             }
 
-            if ($done) {
-                message (lang('changes_saved'));
-                redirect ("admin/experiment_edit.php?experiment_id=".$edit['experiment_id']);
+            if ($successful) {
+                show_message (lang('changes_saved'));
+                redirect ("admin/experiment_show.php?experiment_id=".$edit['experiment_id']);
             } else {
-                message (lang('database_error'));
-                redirect ("admin/experiment_edit.php?experiment_id=".$edit['experiment_id']);
+                show_message (lang('database_error'));
             }
 
         }
