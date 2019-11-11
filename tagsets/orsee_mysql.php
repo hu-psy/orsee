@@ -233,7 +233,11 @@ function orsee_db_save_array($array,$table,$key,$keyname) {
             $query="INSERT INTO ".table($table)." SET ".$keyname."=:key, ".$set_phrase;
         }
     $result=or_query($query,$pars);
-    return $result;
+    if($result->errorInfo()[0] != 0){
+        return False;
+    }
+
+    return True;
 }
 
 function dump_array($array,$title="",$dolang=true) {
