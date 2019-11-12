@@ -12,6 +12,12 @@ if ($proceed) {
         $allow=check_allow('experiment_edit','experiment_show.php?experiment_id='.$_REQUEST['experiment_id']);
         if ($proceed) {
             $edit=orsee_db_load_array("experiments",$_REQUEST['experiment_id'],"experiment_id");
+            if($edit['experiment_type'] != 'laboratory'){
+                $online_data = orsee_db_load_array("online_experiments",$_REQUEST['experiment_id'],"experiment_id");
+                if($online_data) {
+                    $edit = array_merge($edit, $online_data);
+                }
+            }
             $edit['experiment_show_type']=$edit['experiment_type'].','.$edit['experiment_ext_type'];
             if (!check_allow('experiment_restriction_override'))
                 check_experiment_allowed($edit,"admin/experiment_show.php?experiment_id=".$edit['experiment_id']);
@@ -66,7 +72,26 @@ if ($proceed) {
             message(lang('error_at_least_one_experimenter_mail_required'));
             $continue=false;
         }
-	
+
+        $exptypes=explode(",",$_REQUEST['experiment_show_type']);
+        $_REQUEST['experiment_type']=trim($exptypes[0]);
+        $_REQUEST['experiment_ext_type']=trim($exptypes[1]);
+
+        if($_REQUEST['experiment_type'] != 'laboratory') {
+            if (!$_REQUEST['link']) {
+                message(lang('error_link_required_for_online_experiments'));
+                $continue=false;
+            }
+            if (!$_REQUEST['begin']) {
+                message(lang('error_begin_required_for_online_experiments'));
+                $continue=false;
+            }
+            if (!$_REQUEST['end']) {
+                message(lang('error_end_required_for_online_experiments'));
+                $continue=false;
+            }
+        }
+
         if ($continue) {
 
             if (!isset($_REQUEST['experiment_finished']) ||!$_REQUEST['experiment_finished']) $_REQUEST['experiment_finished']="n";
@@ -77,22 +102,25 @@ if ($proceed) {
 
             if (!isset($_REQUEST['access_restricted']) ||!$_REQUEST['access_restricted']) $_REQUEST['access_restricted']="n";
 
-
-
-            $exptypes=explode(",",$_REQUEST['experiment_show_type']);
-            $_REQUEST['experiment_type']=trim($exptypes[0]);
-            $_REQUEST['experiment_ext_type']=trim($exptypes[1]);
-
             $edit=$_REQUEST;
 
-            $done=orsee_db_save_array($edit,"experiments",$edit['experiment_id'],"experiment_id");
+            $successful=orsee_db_save_array($edit,"experiments",$edit['experiment_id'],"experiment_id");
 
-            if ($done) {
-                message (lang('changes_saved'));
-                redirect ("admin/experiment_edit.php?experiment_id=".$edit['experiment_id']);
+            if($successful and $_REQUEST['experiment_type'] != 'laboratory') {
+                $successful = orsee_db_save_array($edit,"online_experiments",$edit['experiment_id'],"experiment_id");
+                if(! $successful) {
+                    $existing = orsee_db_load_array("online_experiments",$_REQUEST['experiment_id'],"experiment_id");
+                    if($existing === False) { // not in db so it is a new experiment
+                        orsee_db_delete_array("experiments",$_REQUEST['experiment_id'],"experiment_id");
+                    }
+                }
+            }
+
+            if ($successful) {
+                show_message (lang('changes_saved'));
+                redirect ("admin/experiment_show.php?experiment_id=".$edit['experiment_id']);
             } else {
-                message (lang('database_error'));
-                redirect ("admin/experiment_edit.php?experiment_id=".$edit['experiment_id']);
+                show_message (lang('database_error'));
             }
 
         }
@@ -115,7 +143,7 @@ if ($proceed) {
                 'experiment_id','sender_mail','experiment_show_type','access_restricted',
                 'experiment_finished','hide_in_stats','hide_in_cal',
                 'ethics_by','ethics_number','ethics_exempt','ethics_expire_date',
-                'payment_types','payment_budgets');
+                'payment_types','payment_budgets','link','begin','end');
         foreach ($formvarnames as $fvn) {
             if (!isset($edit[$fvn])) $edit[$fvn]="";
         }
@@ -184,7 +212,42 @@ if ($proceed) {
 
     echo '      </SELECT></TD>
             </TR>';
+    $lang_online_link = lang('online_link');
+    $lang_online_begin = lang('online_begin');
+    $lang_online_end = lang('online_end');
+    echo <<<HTML
+            <TR class="online_exp">
+                <TD> ${lang_online_link}: </TD>
+                <TD> <INPUT type="text" name="link" value="${edit['link']}"> </TD>
+            </TR>
+            <TR class="online_exp">
+                <TD> ${lang_online_begin}: </TD>
+                <TD> <INPUT type="date" name="begin" value="${edit['begin']}"> </TD>
+            </TR>
+            <TR class="online_exp">
+                <TD> ${lang_online_end}: </TD>
+                <TD> <INPUT type="date" name="end" value="${edit['end']}"> </TD>
+            </TR>
+HTML;
+    echo <<<JAVASCRIPT
+            <script>
+            $(document).ready(function(){
+                function hide_n_show() {
+                    var sel = document.getElementsByName("experiment_show_type")[0];
+                    var v = sel.options[sel.selectedIndex].value;
+                    if(v.includes('internet') || v.includes('online-survey')){
+                        $(".online_exp").show();
+                    } else {
+                        $(".online_exp").hide();
+                    }
+                }
 
+                hide_n_show();
+
+                $("SELECT[name='experiment_show_type']").change(hide_n_show);
+            });
+            </script>
+JAVASCRIPT;
     echo '          <TR>
                                 <TD>'.lang('class').':</TD>
                                 <TD valign="top">';

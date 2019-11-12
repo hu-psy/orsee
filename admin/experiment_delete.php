@@ -45,6 +45,10 @@ if ($proceed) {
                 AND content_name= :experiment_id";
         $result=or_query($query,$pars);
 
+        if($experiment['experiment_type'] != 'laboratory'){
+            orsee_db_delete_array("online_experiments", $experiment['experiment_id'],"experiment_id");
+        }
+
         message (lang('experiment_deleted'));
         log__admin("experiment_delete","experiment:".$experiment['experiment_name']);
         redirect ('admin/experiment_main.php');

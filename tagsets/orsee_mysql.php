@@ -188,6 +188,11 @@ function orsee_db_load_array($table,$key,$keyname) {
         return $line;
 }
 
+function orsee_db_delete_array($table,$key,$keyname) {
+        $query="DELETE FROM ".table($table)." where ".$keyname."=:key";
+        $pars=array(':key'=>$key);
+        $line=orsee_query($query,$pars);
+}
 
 function orsee_db_save_array($array,$table,$key,$keyname) {
     global $site__database_database;
@@ -228,7 +233,11 @@ function orsee_db_save_array($array,$table,$key,$keyname) {
             $query="INSERT INTO ".table($table)." SET ".$keyname."=:key, ".$set_phrase;
         }
     $result=or_query($query,$pars);
-    return $result;
+    if($result->errorInfo()[0] != 0){
+        return False;
+    }
+
+    return True;
 }
 
 function dump_array($array,$title="",$dolang=true) {
