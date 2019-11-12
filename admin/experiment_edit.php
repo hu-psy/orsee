@@ -69,7 +69,7 @@ if ($proceed) {
             message(lang('error_at_least_one_experimenter_mail_required'));
             $continue=false;
         }
-	
+
         $exptypes=explode(",",$_REQUEST['experiment_show_type']);
         $_REQUEST['experiment_type']=trim($exptypes[0]);
         $_REQUEST['experiment_ext_type']=trim($exptypes[1]);
@@ -210,7 +210,6 @@ if ($proceed) {
 
     echo '      </SELECT></TD>
             </TR>';
-    // TODO: add language symbol
     $lang_online_link = lang('online_link');
     $lang_online_begin = lang('online_begin');
     $lang_online_end = lang('online_end');
