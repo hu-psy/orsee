@@ -17,6 +17,12 @@ if ($proceed) {
 if ($proceed) {
     // load experiment data into array experiment
     $experiment=orsee_db_load_array("experiments",$experiment_id,"experiment_id");
+    if($experiment['experiment_type'] != 'laboratory'){
+        $online_data = orsee_db_load_array("online_experiments",$_REQUEST['experiment_id'],"experiment_id");
+        if($online_data) {
+            $experiment = array_merge($experiment, $online_data);
+        }
+    }
     if (!check_allow('experiment_restriction_override'))
         check_experiment_allowed($experiment,"admin/experiment_main.php");
 }
@@ -166,6 +172,12 @@ if ($proceed) {
 
     if (trim($experiment['experiment_link_to_paper'])) {
             $conditional_fields[]='<TD colspan=2><A target="_blank" HREF="'.trim($edit['experiment_link_to_paper']).'">'.lang('Link to paper').'</A></TD>';
+    }
+
+    if($experiment['experiment_type'] != 'laboratory'){
+        $conditional_fields[]='<TD>'.lang('online_link') .': </TD> <TD><A target="_blank" HREF="'.trim($experiment['link']).'">'.trim($experiment['link']).'</A></TD>';
+        $conditional_fields[]='<TD>'.lang('online_begin').": </TD> <TD> ${experiment['begin']} </TD>";
+        $conditional_fields[]='<TD>'.lang('online_end')  .": </TD> <TD> ${experiment['end']} </TD>";
     }
 
     $i=0;
