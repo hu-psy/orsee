@@ -77,7 +77,6 @@ if ($proceed) {
         $_REQUEST['experiment_type']=trim($exptypes[0]);
         $_REQUEST['experiment_ext_type']=trim($exptypes[1]);
 
-        // TODO: add lang symbols
         if($_REQUEST['experiment_type'] != 'laboratory') {
             if (!$_REQUEST['link']) {
                 message(lang('error_link_required_for_online_experiments'));
