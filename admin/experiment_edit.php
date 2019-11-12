@@ -110,8 +110,8 @@ if ($proceed) {
             if($successful and $_REQUEST['experiment_type'] != 'laboratory') {
                 $successful = orsee_db_save_array($edit,"online_experiments",$edit['experiment_id'],"experiment_id");
                 if(! $successful) {
-                    $successful = orsee_db_load_array("online_experiments",$_REQUEST['experiment_id'],"experiment_id");
-                    if($successful === False) { // not in db so it is a new experiment
+                    $existing = orsee_db_load_array("online_experiments",$_REQUEST['experiment_id'],"experiment_id");
+                    if($existing === False) { // not in db so it is a new experiment
                         orsee_db_delete_array("experiments",$_REQUEST['experiment_id'],"experiment_id");
                     }
                 }
