@@ -13,7 +13,10 @@ if ($proceed) {
         if ($proceed) {
             $edit=orsee_db_load_array("experiments",$_REQUEST['experiment_id'],"experiment_id");
             if($edit['experiment_type'] != 'laboratory'){
-                $edit = array_merge($edit, orsee_db_load_array("online_experiments",$_REQUEST['experiment_id'],"experiment_id"));
+                $online_data = orsee_db_load_array("online_experiments",$_REQUEST['experiment_id'],"experiment_id");
+                if($online_data) {
+                    $edit = array_merge($edit, $online_data);
+                }
             }
             $edit['experiment_show_type']=$edit['experiment_type'].','.$edit['experiment_ext_type'];
             if (!check_allow('experiment_restriction_override'))
