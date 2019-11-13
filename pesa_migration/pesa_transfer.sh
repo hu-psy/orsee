@@ -11,6 +11,7 @@ fi
 
 #!/bin/bash
 array=(pesa_transfer_experiment_types.sql
+pesa_add_online_experiment_table.sql
 pesa_transfer_experiments.sql
 pesa_transfer_sessions.sql
 pesa_transfer_bulk_mail_texts.sql
@@ -30,10 +31,12 @@ pesa_transfer_welcome.sql
 pesa_set_options.sql
 pesa_set_rights.sql
 pesa_add_mail_templates.sql
+pesa_add_cron_job.sql
 pesa_fix_email.sql
 pesa_fix_labs.sql
 pesa_set_new_experiment_types.sql
 pesa_add_new_options.sql
+pesa_add_new_lang_symbols.sql
 pesa_add_new_public_content.sql
 pesa_extend_admin.sql
 pesa_update_error_message.sql)
