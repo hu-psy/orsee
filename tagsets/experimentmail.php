@@ -343,7 +343,15 @@ function experimentmail__send_mails_from_queue($number=0,$type="",$experiment_id
         $continue=true;
 
         // well, if experiment_id, session_id, recipient, footer or inv_text, add to array
-        if (!isset($exps[$texp]) && $texp)  $exps[$texp]=orsee_db_load_array("experiments",$texp,"experiment_id");
+        if (!isset($exps[$texp]) && $texp) {
+            $exps[$texp] = orsee_db_load_array("experiments",$texp,"experiment_id");
+            if($exps[$texp]['experiment_type'] != 'laboratory'){
+                $online_data = orsee_db_load_array("online_experiments",$texp,"experiment_id");
+                if($online_data) {
+                    $exps[$texp] = array_merge($exps[$texp], $online_data);
+                }
+            }
+        }
         if (!isset($sesss[$tsess]) && $tsess) $sesss[$tsess]=orsee_db_load_array("sessions",$tsess,"session_id");
         if (!isset($parts[$tpart]) && $tpart) $parts[$tpart]=orsee_db_load_array("participants",$tpart,"participant_id");
         $tlang=$parts[$tpart]['language'];
@@ -662,7 +670,13 @@ function experimentmail__get_invitation_mail_details($part,$exp,$slist) {
     $part['enrolment_link']=experimentmail__build_lab_registration_link($part);
     $part['experiment_name']=$exp['experiment_public_name'];
     $part['sessionlist']=$slist;
-    $part['link']=experimentmail__build_lab_registration_link($part);
+    if ($exp['experiment_type'] != 'laboratory') {
+        $part['link'] = $exp['link'];
+        $part['start_time'] = $exp['begin'];
+        $part['stop_time'] = $exp['end'];
+    } else {
+        $part['link']=experimentmail__build_lab_registration_link($part);
+    }
     return $part;
 }
 
