@@ -1,4 +1,4 @@
-create table or_online_experiments(
+create table ##new_db##.or_online_experiments(
     experiment_id int not null,
     link text not null,
     begin date not null,
