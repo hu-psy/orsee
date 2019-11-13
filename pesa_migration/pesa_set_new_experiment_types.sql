@@ -3,8 +3,8 @@ truncate table ##new_db##.or_experiment_types;
 
 INSERT INTO `##new_db##`.`or_experiment_types` (`exptype_id`, `exptype_name`, `exptype_description`, `exptype_mapping`, `enabled`) VALUES ('1', 'LaboratoryWOP', 'normal laboratory eyperiments without payment', 'laboratory', 'y');
 INSERT INTO `##new_db##`.`or_experiment_types` (`exptype_id`, `exptype_name`, `exptype_description`, `exptype_mapping`, `enabled`) VALUES ('2', 'LaboratoryP', 'normal laboratory eyperiments with payment', 'laboratory', 'y');
-INSERT INTO `##new_db##`.`or_experiment_types` (`exptype_id`, `exptype_name`, `exptype_description`, `exptype_mapping`, `enabled`) VALUES ('3', 'Online-SurveyWOP', 'online survey experiments without payment', 'online-survey', 'y');
-INSERT INTO `##new_db##`.`or_experiment_types` (`exptype_id`, `exptype_name`, `exptype_description`, `exptype_mapping`, `enabled`) VALUES ('4', 'Online-SurveyP', 'online survey experiments with payment', 'online-survey', 'y');
+INSERT INTO `##new_db##`.`or_experiment_types` (`exptype_id`, `exptype_name`, `exptype_description`, `exptype_mapping`, `enabled`) VALUES ('3', 'Online-SurveyWOP', 'online survey experiments without payment', 'internet', 'y');
+INSERT INTO `##new_db##`.`or_experiment_types` (`exptype_id`, `exptype_name`, `exptype_description`, `exptype_mapping`, `enabled`) VALUES ('4', 'Online-SurveyP', 'online survey experiments with payment', 'internet', 'y');
 
 /* change experiment types in or_participants subscription */
 alter table ##new_db##.or_participants add new_subs varchar(50);
