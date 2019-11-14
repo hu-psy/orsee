@@ -6,7 +6,8 @@ insert into ##new_db##.numbers values (1),(2),(3),(4),(5),(6);
 
 /* drop table ##new_db##.b; */
 create temporary table ##new_db##.b (participant_id int(20), new_subs varchar(50));
-insert into ##new_db##.b (participant_id, new_subs)
+/* TODO: remove ignore */
+insert ignore into ##new_db##.b (participant_id, new_subs)
 select participant_id,  group_concat(concat('|',exptype_id,'|') separator ',') 
 from (
   (select participant_id, substring_index(substring_index(subscriptions, ',', N), ',', -1) as subs

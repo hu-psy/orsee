@@ -17,8 +17,9 @@ insert into ##new_db##.numbers values (1),(2),(3),(4),(5);
 
 /* create table containing a row for each experiment's experimenter... in fact it's describing the 1(experiment)-n(experimenter) relation */
 /* drop table ##new_db##.exps; */
-create temporary table ##new_db##.exps (experiment_id varchar(10), exp varchar(10), admin_id varchar(20));
-insert into ##new_db##.exps select experiment_id, exp, admin_id
+create temporary table ##new_db##.exps (experiment_id varchar(10), exp varchar(20), admin_id varchar(20));
+/* TODO: remove ignore */
+insert ignore into ##new_db##.exps select experiment_id, exp, admin_id
 	from (select experiment_id, substring_index(substring_index(experimenter, ',', N), ',', -1) as exp
 			from ##new_db##.or_experiments
             join ##new_db##.numbers on char_length(experimenter) - char_length(replace(experimenter, ',', '') >= N-1)) as t
@@ -49,7 +50,8 @@ update ##new_db##.or_experiments as a join ##new_db##.exp_id_to_admin_ids as b o
 /* drop table ##new_db##.exps; */
 /* drop table ##new_db##.exp_mail; */
 create temporary table ##new_db##.exp_mail (experiment_id varchar(10), exp varchar(10), admin_id varchar(20));
-insert into ##new_db##.exp_mail select experiment_id, exp, admin_id
+/* TODO: remove ignore */
+insert ignore into ##new_db##.exp_mail select experiment_id, exp, admin_id
 	from (select experiment_id, substring_index(substring_index(experimenter_mail, ',', N), ',', -1) as exp
 			from ##new_db##.or_experiments
             join ##new_db##.numbers on char_length(experimenter_mail) - char_length(replace(experimenter_mail, ',', '') >= N-1)) as t
@@ -77,8 +79,9 @@ update ##new_db##.or_experiments
 /*---------------------------------------------------------
   update sender mail
 ---------------------------------------------------------*/
+/* use first experimenter_mail as sender_mail */
 update ##new_db##.or_experiments
-	set sender_mail = (select email from ##new_db##.or_admin where admin_id = replace(experimenter_mail, '|', ''))
+	set sender_mail = (select email from ##new_db##.or_admin where admin_id = substring_index(replace(experimenter_mail, '|', ''),',',1))
     where sender_mail not in (select email from ##new_db##.or_admin);
 
 /* experiment_ext_type uses experiment_types.exptype_id and not exptype_name */
