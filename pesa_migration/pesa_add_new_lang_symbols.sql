@@ -29,3 +29,10 @@ from ##new_db##.or_lang;
 insert into ##new_db##.or_lang (lang_id, enabled, order_number, content_type, content_name, en, de)
 select max(lang_id)+1 ,'y', -1, 'lang', 'error_end_required_for_online_experiments', 'You have to enter valid end date for the online experiment.', 'Sie müssen einen Endtermin für das Online-Experiment angeben.'
 from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang (lang_id, enabled, order_number, content_type, content_name, en, de)
+select max(lang_id)+1 ,'y', -1, 'lang', 'gender_d', 'non-binary', 'divers'
+from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang
+select max(lang_id)+1 ,'y', -1, 'lang', 'gender_d_abbr', 'n', 'd' from ##new_db##.or_lang;
