@@ -21,8 +21,8 @@ pesa_transfer_rules_and_privacy.sql
 pesa_transfer_experiment_classes.sql
 pesa_transfer_experiment_session_invitation_mail.sql
 pesa_transfer_experiment_session_reminder_mail.sql
-pesa_transfer_participants.sql
 pesa_transfer_remove_profile_fields.sql
+pesa_transfer_participants.sql
 pesa_modify_profile_fields.sql
 pesa_modify_template.sql
 pesa_transfer_participate_at.sql
