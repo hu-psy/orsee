@@ -36,3 +36,9 @@ from ##new_db##.or_lang;
 
 insert into ##new_db##.or_lang
 select max(lang_id)+1 ,'y', -1, 'lang', 'gender_d_abbr', 'n', 'd' from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang
+select max(lang_id)+1 ,'y', -1, 'lang', 'year_of_birth', 'year of birth', 'Geburtsjahr' from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang
+select max(lang_id)+1 ,'y', -1, 'lang', 'you_have_to_year_of_birth', 'Please enter your year of birth.', 'Bitte geben Sie Ihr Geburtsjahr an.' from ##new_db##.or_lang;
