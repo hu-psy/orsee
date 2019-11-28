@@ -24,17 +24,18 @@ function cron__run_cronjobs() {
 
     // cronjobs will be executed in that order ...
     $cronjobs=array('check_for_registration_end',
-	    'check_for_finished_sessions',
-            'check_for_session_reminders',
-            'apply_permanent_queries',
-            'process_mail_queue',
-            'retrieve_emails',
-            'update_participants_history',
-            'check_for_noshow_warnings',
-            'check_for_participant_exclusion',
-            'send_participant_statistics',
-            'send_experiment_calendar',
-            'run_webalizer');
+        'check_for_finished_sessions',
+        'check_for_finished_experiments',
+        'check_for_session_reminders',
+        'apply_permanent_queries',
+        'process_mail_queue',
+        'retrieve_emails',
+        'update_participants_history',
+        'check_for_noshow_warnings',
+        'check_for_participant_exclusion',
+        'send_participant_statistics',
+        'send_experiment_calendar',
+        'run_webalizer');
 
     $query="SELECT * from ".table('cron_jobs')." WHERE enabled='y'";
     $result=or_query($query);
@@ -427,6 +428,33 @@ function cron__check_for_finished_sessions(){
 	}
     }
     return $number . " sessions closed";
+}
+
+function cron__check_for_finished_experiments(){
+    // get experiments which arn't finished and their last session
+    $exp_tbl = table('experiments');
+    $ses_tbl = table('sessions');
+    $query="select {$exp_tbl}.experiment_id, max({$ses_tbl}.session_start)
+            from {$exp_tbl}
+            inner join {$ses_tbl}
+            on {$exp_tbl}.experiment_id = {$ses_tbl}.experiment_id
+            where {$exp_tbl}.experiment_finished = 'n'
+            group by {$exp_tbl}.experiment_id";
+    $result=or_query($query);
+
+    $now=time();
+    $number = 0;
+    $four_weeks = 4 * 7 * 24 * 60 * 60;
+    while ($line=pdo_fetch_assoc($result)) {
+        // if the last session start time is more than 4 weeks ago the experiment is considered to be finished
+        $session_start = ortime__sesstime_to_unixtime($line['session_start']);
+        if ($session_end + $four_weeks < $now) {
+            $query = "update {$exp_tbl} set experiment_finished = 'y' where experiment_id = '{$line['experiment_id']}'";
+            $done = or_query($query);
+            $number++;
+        }
+    }
+    return $number . " experiments closed";
 }
 
 function cron__check_for_participant_exclusion() {
