@@ -1,15 +1,15 @@
 <?php
 // part of orsee. see orsee.org
 
-
+// HACK: disable some query modules by commenting them out
 $all_orsee_query_modules=array(
-"statusids",
-"pformtextfields",
-"noshows",
-"participations",
-"activity",
-"updaterequest",
-"subsubjectpool",
+//"statusids",
+//"pformtextfields",
+//"noshows",
+//"participations",
+//"activity",
+//"updaterequest",
+//"subsubjectpool",
 "pformselects",
 "experimentclasses",
 "experimenters",
