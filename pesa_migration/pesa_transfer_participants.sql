@@ -29,9 +29,11 @@ on a.participant_id = b.participant_id
 set a.new_subs = b.new_subs 
 where a.participant_id = b.participant_id;
 
-insert into ##new_db##.or_participants(participant_id, participant_id_crypt, subpool_id, email, phone_number, lname, fname, begin_of_studies, subscriptions, field_of_studies, profession, gender, number_reg, number_noshowup, rules_signed, `language`) 
-select participant_id, participant_id_crypt, subpool_id, email, phone_number, lname, fname, begin_of_studies, new_subs, field_of_studies, profession, gender, number_reg, number_noshowup, rules_signed, `language`
-from ##old_db##.or_participants where deleted = "n" and excluded = "n";
+alter table ##new_db##.or_participants add column year_of_birth int(4) not null;
+
+insert into ##new_db##.or_participants(participant_id, participant_id_crypt, subpool_id, email, subscriptions, gender, number_reg, number_noshowup, rules_signed, `language`, year_of_birth)
+select participant_id, participant_id_crypt, subpool_id, email, new_subs, gender, number_reg, number_noshowup, rules_signed, `language`, cast(year_of_birth as int)
+from ##old_db##.or_participants where deleted = "n" and excluded = "n" and unsuitable = "n";
 
 /* set status_id to 1 because we have only not deleted and not excluded ones */
 update ##new_db##.or_participants set status_id=1;
