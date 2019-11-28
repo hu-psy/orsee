@@ -240,21 +240,29 @@ function query__get_query($query_array,$query_id,$additional_clauses,$sort,$reso
         }
     }
     if (count($additional_clauses)>0 && count($query_array['clauses'])>0) $query.=' ) ';
-    if (isset($query_array['limit'])) {
+
+    // HACK: sizeof($additional_clause) == 3 only if called from admin/experiment_add_participants.php
+    if(sizeof($additional_clauses) == 3) {
+        // limit depending on already assigned participants
+        $already_assigned_query = "SELECT count(participant_id) as already_assigned FROM ".table('participate_at')." WHERE experiment_id= :experiment_id";
+        $already_assigned = orsee_query($already_assigned_query,$additional_clauses[2]['pars'])['already_assigned'];
+        $limit = max(0, 400 - $already_assigned); // TODO: make it a setting
+        if (isset($query_array['limit'])) {
+            $limit = min($query_array['limit'], $limit);
+            $limit = max(0, $limit);
+        }
+
         $query.="\n ORDER BY rand(";
         if ($query_id) {
             $query.=':query_id';
             $pars[':query_id']= (int) $query_id;
         }
         $query.=") LIMIT :limit "; // parametrizing limit only works well with PDO::ATTR_EMULATE_PREPARES = FALSE
-        $pars[':limit']= $query_array['limit'];
+        $pars[':limit'] = $limit;
     }
+
     if ($sort) { // sort is filtered through whitelisting
-        if (isset($query_array['limit'])) {
-            $query="SELECT * FROM (".$query.") as participants ORDER BY ".$sort;
-        } else {
-            $query=$query." ORDER BY ".$sort;
-        }
+        $query="SELECT * FROM (".$query.") as participants ORDER BY ".$sort;
     }
     // strip whitespace
     $query=trim(preg_replace('/\s+/', ' ', $query));
