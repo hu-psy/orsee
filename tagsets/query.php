@@ -206,6 +206,7 @@ function query__get_subqueries($clause,$subqueries,$resolve_subqueries=false) {
 }
 
 function query__get_query($query_array,$query_id,$additional_clauses,$sort,$resolve_subqueries=false) {
+    global $settings;
     $i=0; $pars=array();
     $query="SELECT * from ".table('participants')." ";
     if (count($query_array['clauses'])>0 || count($additional_clauses)>0) $query.="WHERE ";
@@ -245,11 +246,11 @@ function query__get_query($query_array,$query_id,$additional_clauses,$sort,$reso
     if(sizeof($additional_clauses) == 3) {
         // limit depending on already assigned participants
         $already_assigned_query = "SELECT count(participant_id) as already_assigned FROM ".table('participate_at')." WHERE experiment_id= :experiment_id";
-        $already_assigned = orsee_query($already_assigned_query,$additional_clauses[2]['pars'])['already_assigned'];
-        $limit = max(0, 400 - $already_assigned); // TODO: make it a setting
+        $already_assigned = orsee_query($already_assigned_query, $additional_clauses[2]['pars'])['already_assigned'];
+        $limit = max(0, $settings['maximum_assignments'] - $already_assigned);
         if (isset($query_array['limit'])) {
             $limit = min($query_array['limit'], $limit);
-            $limit = max(0, $limit);
+            $limit = max(0, $limit); // a user might pass a negative limit
         }
 
         $query.="\n ORDER BY rand(";
@@ -262,7 +263,7 @@ function query__get_query($query_array,$query_id,$additional_clauses,$sort,$reso
     }
 
     if ($sort) { // sort is filtered through whitelisting
-        $query="SELECT * FROM (".$query.") as participants ORDER BY ".$sort;
+        $query="SELECT * FROM ({$query}) as participants ORDER BY {$sort}";
     }
     // strip whitespace
     $query=trim(preg_replace('/\s+/', ' ', $query));
