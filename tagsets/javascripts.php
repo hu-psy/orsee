@@ -242,20 +242,30 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
     $myitems_picker = "";
 
     // if maxlen < cols, resize, otherwise trim display values
-    //if ($op['cols'] >= $maxlen) {
-    //    $op['cols'] = $maxlen;
-    //} else {
-    //    if ($op['trim_display_values'] || $op['trim_picker_values']) {
-    //        $temp_data=array();
-    //        foreach ($data as $key=>$value) {
-    //            if (strlen($value)>$op['trim_to_chars']) $value=substr($value,0,$op['trim_to_chars']-3).'...';
-    //            $temp_data[]= '{ show: "'.trim($value).'", value: "'.$key.'", disabled: false }';
-    //        }
-    //        $myitems_picker='[ '.implode(" , ",$temp_data).' ]';
-    //        if ($op['trim_display_values']) $myitems=$myitems_picker;
-    //        if (!$op['trim_picker_values']) $myitems_picker="";
-    //    }
-    //}
+    if ($op['cols'] >= $maxlen) {
+        $op['cols'] = $maxlen;
+    } else {
+        if ($op['trim_display_values'] || $op['trim_picker_values']) {
+            $temp_data=array();
+            $exps=array();
+            $groups=array();
+
+            foreach ($data as $group => $elements) {
+                foreach($elements as $key => $value) {
+                    if (strlen($value)>$op['trim_to_chars']) $value=substr($value,0,$op['trim_to_chars']-3).'...';
+                    $value = trim($value);
+                    $exps[] = "{ show: \"{$value}\", value: \"{$key}\", disabled: false }";
+                }
+
+                $groups[] = "\"{$group}\" : [ " . implode(" , ",$exps) . ' ]';
+                $exps = array();
+            }
+
+            $myitems_picker = '{ '.implode(" , ",$groups).' }';
+            if ($op['trim_display_values']) $myitems = $myitems_picker;
+            if (!$op['trim_picker_values']) $myitems_picker =  "";
+        }
+    }
 
     $selitems="";
     if (is_array($selected) && count($selected)>0) {
@@ -306,11 +316,12 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
 
     $tagsItems = '';
     if ($selitems)
-         $tagsItems = "tagsItems: {$selitems},";
+        $tagsItems = "tagsItems: {$selitems},";
 
-    $out.= <<<JAVASCRIPT
+    $out .= <<<JAVASCRIPT
 <script type="text/javascript">
     var {$name}_myitems = {$myitems};
+    {$declare_myitems_picker}
     var group;
 
     $(document).ready(function(){
@@ -391,8 +402,6 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
         {$name}_reload_options();
 
         $('#{$name}_filter').change({$name}_reload_options);
-
-        //{$declare_myitems_picker}
     });
 
 </script>
