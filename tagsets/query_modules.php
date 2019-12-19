@@ -16,7 +16,10 @@ $all_orsee_query_modules=array(
 "experimentsparticipated",
 "experimentsassigned",
 "randsubset",
-"brackets"
+"brackets",
+"experiment_participated_by_group"
+//"experiment_by_experimenter" // TODO
+//"experimenter_by_group" // TODO
 );
 
 
@@ -96,6 +99,30 @@ function query__get_query_form_prototypes($hide_modules=array(),$experiment_id="
         $content.=lang('participants_have_participated_on').'<BR>';
         $content.=experiment__other_experiments_select_field("#experiments_participated#_ms_experiments","participated",$experiment_id,array(),true,array('cols'=>80,'tag_color'=>'#a8a8ff','picker_color'=>'#0000ff','picker_maxnumcols'=>$settings['query_experiment_list_nr_columns']));
         $prototype['content']=$content; $prototypes[]=$prototype;
+        break;
+
+    case "experiment_participated_by_group":
+        $prototype=array('type' => 'experimentsparticipated_by_group_multiselect',
+                         'displayname' => lang('query_experiments_participated_by_group'),
+                         'field_name_placeholder' => '#experiments_participated_by_group#'
+                        );
+        $content = '<SELECT name="not">
+                        <OPTION value="NOT" SELECTED>'.lang('without').'</OPTION>
+                        <OPTION value="">'.lang('only').'</OPTION>
+                    </SELECT> ';
+        $content .= lang('participants_have_participated_on_by_group').'<BR>';
+        $content .= experiment__other_experiments_by_group_select_field("#experiments_participated_by_group#_ms_experiments",
+                                                                        "participated",
+                                                                        $experiment_id,
+                                                                        array(),
+                                                                        true,
+                                                                        array('cols' => 80,
+                                                                              'tag_color' => '#a8a8ff',
+                                                                              'picker_color' => '#0000ff',
+                                                                              'picker_maxnumcols' => $settings['query_experiment_list_nr_columns'])
+                                                                       );
+        $prototype['content'] = $content;
+        $prototypes[] = $prototype;
         break;
 
     case "statusids":

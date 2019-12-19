@@ -189,6 +189,218 @@ function get_multi_picker($name,$data,$selected=array(),$options=array()) {
     return $out;
 }
 
+function get_filtered_multi_picker($name,$data,$selected=array(),$options=array()) {
+    //$dump = var_dump($data, true);
+    //show_messages($dump);
+    global $settings;
+    $out='';
+    $op=array(
+        'prompt_text'=>'Choose ...',
+        'show_prompt'=>true,
+        'show_arrow'=>true,
+        'show_clear'=>false,
+        'focus_effect'=>true,
+        'show_picker'=>true,
+        'picker_icon'=>'tags',
+        'picker_color'=>'#555555',
+        'picker_numcols'=>0,
+        'picker_maxnumcols'=>0,
+        'tag_color'=>'#e2e6f0',
+        'rows'=>1,
+        'cols'=>50,
+        'trim_display_values'=>false,
+        'trim_picker_values'=>true,
+        'trim_to_chars'=>30
+    );
+    if (is_array($options)) {
+        foreach ($options as $key=>$value) {
+            if (isset($op[$key])) $op[$key]=$value;
+        }
+    }
+
+    if (!is_array($data))
+        return $out;
+
+    // create json data for textex, but also look for max length entry
+    $exps=array();
+    $groups=array();
+    $maxlen = 0;
+    foreach ($data as $group => $elements) {
+        foreach($elements as $key => $value) {
+            $exps[] = '{ show: "'.trim($value)."\", value: \"{$key}\", disabled: false }";
+            $thislen = strlen(trim($value));
+            if ($thislen>$maxlen) $maxlen = $thislen;
+        }
+
+        $groups[] = "\"{$group}\" : [ " . implode(" , ",$exps) . ' ]';
+        $exps = array();
+    }
+
+    $myitems = "{ " . implode(" , ", $groups) . " }";
+    //$dump = var_dump($myitems, true);
+    //show_messages($dump);
+    $myitems_picker = "";
+
+    // if maxlen < cols, resize, otherwise trim display values
+    //if ($op['cols'] >= $maxlen) {
+    //    $op['cols'] = $maxlen;
+    //} else {
+    //    if ($op['trim_display_values'] || $op['trim_picker_values']) {
+    //        $temp_data=array();
+    //        foreach ($data as $key=>$value) {
+    //            if (strlen($value)>$op['trim_to_chars']) $value=substr($value,0,$op['trim_to_chars']-3).'...';
+    //            $temp_data[]= '{ show: "'.trim($value).'", value: "'.$key.'", disabled: false }';
+    //        }
+    //        $myitems_picker='[ '.implode(" , ",$temp_data).' ]';
+    //        if ($op['trim_display_values']) $myitems=$myitems_picker;
+    //        if (!$op['trim_picker_values']) $myitems_picker="";
+    //    }
+    //}
+
+    $selitems="";
+    if (is_array($selected) && count($selected)>0) {
+        $temp_data=array();
+        foreach ($selected as $id) {
+            if (isset($data[$id])) $temp_data[]= '{ show: "'.$data[$id].'", value: "'.$id.'"}';
+        }
+        $selitems='[ '.implode(" , ",$temp_data).' ]';
+    }
+
+    $filter = "<select id={$name}_filter>";
+    foreach ($data as $group => $elements) {
+        $filter .= "<option value=\"{$group}\">{$group}</option>\n";
+    }
+    $filter .= "</select>";
+
+    $cols = op['cols']+10;
+    if (isset($settings['multipicker_left_or_right']) && $settings['multipicker_left_or_right']=='right') {
+        $mpright = "<textarea id=\"{$name}_textarea\" name=\"{$name}\" rows=\"{$op['rows']}\" cols=\"{$cols}\" class=\"{$name}_class\"> </textarea>";
+        $mpleft = "";
+    } else {
+        $mpright = "";
+        $mpleft = "<textarea id=\"{$name}_textarea\" name=\"{$name}\" rows=\"{$op['rows']}\" cols=\"{$cols}\" class=\"{$name}_class\"> </textarea>";
+    }
+
+    if ($op['show_picker']) {
+        $picker = "<i id=\"{$name}_picker\" class=\"fa fa-{$op['picker_icon']} fa-fw\" style=\"padding-left: 5px; vertical-align: top; margin-top: 5px; color: {$op['picker_color']}\"></i>";
+    } else {
+        $picker = "";
+    }
+
+    $out.= $filter . $mpright . $picker . $mpleft;
+
+    $declare_myitems_picker = $picker_stuff = '';
+    if ($myitems_picker) {
+        $declare_myitems_picker ="var {$name}_myitems_picker = {$myitems_picker};";
+        $picker_stuff = "_picker";
+    }
+
+    $arrow = $prompt = $prompt_text = $focus = '';
+    if ($op['show_arrow']) $arrow = " arrow";
+    if ($op['show_prompt']) {
+        $prompt = " prompt";
+        if ($op['prompt_text'])
+            $prompt_text = "prompt: '{$op['prompt_text']}',";
+    }
+    if ($op['focus_effect']) $focus = " focus";
+
+    $tagsItems = '';
+    if ($selitems)
+         $tagsItems = "tagsItems: {$selitems},";
+
+    $out.= <<<JAVASCRIPT
+<script type="text/javascript">
+    var {$name}_myitems = {$myitems};
+    var group;
+
+    $(document).ready(function(){
+        function {$name}_reload_options() {
+            var sel = document.getElementById("{$name}_filter");
+            group = sel.options[sel.selectedIndex].value;
+            var elem = document.getElementById("{$name}_wrap");
+            if (elem !== null) {
+                elem.outerHTML = "<textarea id=\"{$name}_textarea\" name=\"{$name}\" rows=\"{$op['rows']}\" cols=\"{$cols}\" class=\"{$name}_class\"> </textarea>";
+            }
+
+            $('#{$name}_textarea').textext({
+                plugins: 'autocomplete suggestions tags filter{$arrow}{$prompt}{$focus}',
+                {$prompt_text}
+                suggestions: {$name}_myitems[group],
+                {$tagItems}
+                filterItems: {$name}_myitems[group],
+                html:
+                    {
+                        wrap : '<div id="{$name}_wrap" class="text-core"><div class="text-wrap"/></div>',
+                        tag  : '<div class="text-tag"> <div class="text-button" style="background: {$op['tag_color']};"> <span class="text-label"/> <a class="text-remove"/> </div> </div>'
+                    },
+                ext: {
+                    itemManager: {
+                        stringToItem:
+                            function(str) {
+                                var thisindex = -1; var thisvalue = '';
+                                for (index = 0; index < {$name}_myitems[group].length; index++) {
+                                    if ({$name}_myitems[group][index].show==str) {
+                                       thisindex = index;
+                                       break;
+                                    }
+                                }
+                                if (thisindex>-1) { thisvalue = {$name}_myitems[group][thisindex].value; }
+                                return { show: str, value: thisvalue };
+                            },
+                        itemToString:
+                            function(item) {
+                                return item.show;
+                            },
+                        compareItems:
+                            function(item1, item2) {
+                                return item1.show == item2.show;
+                            }
+                    }
+                }
+            });
+
+            function {$name}_updateTagField (avalue,ashow,ah) {
+                var thisindex = -1; var thisshow = '';
+                for (index = 0; index < {$name}_myitems[group].length; index++) {
+                    if ({$name}_myitems[group][index].value==avalue) {
+                       thisindex = index;
+                       break;
+                    }
+                }
+                if (thisindex>-1) { thisshow = {$name}_myitems[group][thisindex].show; }
+                $('#{$name}_textarea').textext()[0].tags().addTags([ {show: thisshow, value: avalue } ]);
+            }
+
+            if(typeof multiDefaults !== 'undefined'){
+                for(p = 0; p < multiDefaults.length; p++){
+                    {$name}_updateTagField (multiDefaults[p],'',0);
+                }
+                multiDefaults = [];
+            }
+
+            $('#{$name}_picker').arraypick(
+                {
+                    numcols: {$op['picker_numcols']},
+                    maxnumcols: {$op['picker_maxnumcols']},
+                    arraydata: {$name}_myitems{$picker_stuff}[group]
+                },
+                {$name}_updateTagField
+            );
+        }
+
+        {$name}_reload_options();
+
+        $('#{$name}_filter').change({$name}_reload_options);
+
+        //{$declare_myitems_picker}
+    });
+
+</script>
+JAVASCRIPT;
+
+    return $out;
+}
+
 function multipicker_json_to_array($json) {
     $ret=array();
     if ($json || $json=='0') {
