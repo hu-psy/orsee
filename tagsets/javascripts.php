@@ -190,8 +190,6 @@ function get_multi_picker($name,$data,$selected=array(),$options=array()) {
 }
 
 function get_filtered_multi_picker($name,$data,$selected=array(),$options=array()) {
-    //$dump = var_dump($data, true);
-    //show_messages($dump);
     global $settings;
     $out='';
     $op=array(
@@ -237,8 +235,6 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
     }
 
     $myitems = "{ " . implode(" , ", $groups) . " }";
-    //$dump = var_dump($myitems, true);
-    //show_messages($dump);
     $myitems_picker = "";
 
     // if maxlen < cols, resize, otherwise trim display values
@@ -280,9 +276,9 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
     foreach ($data as $group => $elements) {
         $filter .= "<option value=\"{$group}\">{$group}</option>\n";
     }
-    $filter .= "</select>";
+    $filter .= "</select><br>";
 
-    $cols = op['cols']+10;
+    $cols = $op['cols']+10;
     if (isset($settings['multipicker_left_or_right']) && $settings['multipicker_left_or_right']=='right') {
         $mpright = "<textarea id=\"{$name}_textarea\" name=\"{$name}\" rows=\"{$op['rows']}\" cols=\"{$cols}\" class=\"{$name}_class\"> </textarea>";
         $mpleft = "";
