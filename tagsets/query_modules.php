@@ -17,7 +17,7 @@ $all_orsee_query_modules=array(
 "experimentsassigned",
 "randsubset",
 "brackets",
-"experiment_participated_by_group"
+"experimentsparticipatedbygroup"
 //"experiment_by_experimenter" // TODO
 //"experimenter_by_group" // TODO
 );
@@ -101,17 +101,17 @@ function query__get_query_form_prototypes($hide_modules=array(),$experiment_id="
         $prototype['content']=$content; $prototypes[]=$prototype;
         break;
 
-    case "experiment_participated_by_group":
-        $prototype=array('type' => 'experimentsparticipated_by_group_multiselect',
+    case "experimentsparticipatedbygroup":
+        $prototype=array('type' => 'experimentsparticipatedbygroup_multiselect',
                          'displayname' => lang('query_experiments_participated_by_group'),
-                         'field_name_placeholder' => '#experiments_participated_by_group#'
+                         'field_name_placeholder' => '#experimentsparticipatedbygroup#'
                         );
         $content = '<SELECT name="not">
                         <OPTION value="NOT" SELECTED>'.lang('without').'</OPTION>
                         <OPTION value="">'.lang('only').'</OPTION>
                     </SELECT> ';
         $content .= lang('participants_have_participated_on_by_group');
-        $content .= experiment__other_experiments_by_group_select_field("#experiments_participated_by_group#_ms_experiments",
+        $content .= experiment__other_experiments_by_group_select_field("#experimentsparticipatedbygroup#_ms_experiments",
                                                                         "participated",
                                                                         $experiment_id,
                                                                         array(),
@@ -434,6 +434,7 @@ function query__get_query_array($posted_array,$experiment_id="") {
                 $subqueries[0]['clause']['pars']=$list['pars'];
                 break;
             case "experimentsparticipated":
+            case "experimentsparticipatedbygroup":
                 $ctype='subquery';
                 // clause
                 $clause='participant_id ';
@@ -643,6 +644,7 @@ function query__get_pseudo_query_array($posted_array) {
                 $text.=': '.experiment__exp_id_list_to_exp_names($params['ms_experiments']);
                 break;
             case "experimentsparticipated":
+            case "experimentsparticipatedbygroup":
                 $text=query__pseudo_query_not_without($params);
                 $text.=' '.lang('participants_have_participated_on');
                 $text.=': '.experiment__exp_id_list_to_exp_names($params['ms_experiments']);
