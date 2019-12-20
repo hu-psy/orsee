@@ -316,12 +316,11 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
 <script type="text/javascript">
     var {$name}_myitems = {$myitems};
     {$declare_myitems_picker}
-    var group;
 
     $(document).ready(function(){
         function {$name}_reload_options() {
             var sel = document.getElementById("{$name}_filter");
-            group = sel.options[sel.selectedIndex].value;
+            var group = sel.options[sel.selectedIndex].value;
             var elem = document.getElementById("{$name}_wrap");
             if (elem !== null) {
                 elem.outerHTML = "<textarea id=\"{$name}_textarea\" name=\"{$name}\" rows=\"{$op['rows']}\" cols=\"{$cols}\" class=\"{$name}_class\"> </textarea>";
@@ -335,8 +334,9 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
                 filterItems: {$name}_myitems[group],
                 html:
                     {
-                        wrap : '<div id="{$name}_wrap" class="text-core"><div class="text-wrap"/></div>',
-                        tag  : '<div class="text-tag"> <div class="text-button" style="background: {$op['tag_color']};"> <span class="text-label"/> <a class="text-remove"/> </div> </div>'
+                        hidden: '<input type="hidden" id="{$name}_hidden_input" value="[]">', // this is required for finding the hidden input to modify the name (setting it here doesn't work because it is overwritten somewhere)
+                        wrap: '<div id="{$name}_wrap" class="text-core"><div class="text-wrap"/></div>',
+                        tag: '<div class="text-tag"> <div class="text-button" style="background: {$op['tag_color']};"> <span class="text-label"/> <a class="text-remove"/> </div> </div>'
                     },
                 ext: {
                     itemManager: {
@@ -363,6 +363,8 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
                     }
                 }
             });
+
+            document.getElementById("{$name}_hidden_input").setAttribute("name","ms_experiments"); // reset name to the one expected by orsee
 
             function {$name}_updateTagField (avalue,ashow,ah) {
                 var thisindex = -1; var thisshow = '';
