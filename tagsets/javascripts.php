@@ -279,13 +279,7 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
     $filter .= "</select><br>";
 
     $cols = $op['cols']+10;
-    if (isset($settings['multipicker_left_or_right']) && $settings['multipicker_left_or_right']=='right') {
-        $mpright = "<textarea id=\"{$name}_textarea\" name=\"{$name}\" rows=\"{$op['rows']}\" cols=\"{$cols}\" class=\"{$name}_class\"> </textarea>";
-        $mpleft = "";
-    } else {
-        $mpright = "";
-        $mpleft = "<textarea id=\"{$name}_textarea\" name=\"{$name}\" rows=\"{$op['rows']}\" cols=\"{$cols}\" class=\"{$name}_class\"> </textarea>";
-    }
+    $textarea = "<textarea id=\"{$name}_textarea\" name=\"{$name}\" rows=\"{$op['rows']}\" cols=\"{$cols}\" class=\"{$name}_class\"> </textarea>";
 
     if ($op['show_picker']) {
         $picker = "<i id=\"{$name}_picker\" class=\"fa fa-{$op['picker_icon']} fa-fw\" style=\"padding-left: 5px; vertical-align: top; margin-top: 5px; color: {$op['picker_color']}\"></i>";
@@ -293,7 +287,11 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
         $picker = "";
     }
 
-    $out.= $filter . $mpright . $picker . $mpleft;
+    if (isset($settings['multipicker_left_or_right']) && $settings['multipicker_left_or_right']=='right') {
+        $out.= $filter . $textarea . $picker;
+    } else {
+        $out.= $filter . $picker . $textarea;
+    }
 
     $declare_myitems_picker = $picker_stuff = '';
     if ($myitems_picker) {
