@@ -316,90 +316,97 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
 <script type="text/javascript">
     var {$name}_myitems = {$myitems};
     {$declare_myitems_picker}
+    var {$name}_group = "Neurocognitive Psychology"; // TODO: saner default
 
-    $(document).ready(function(){
-        function {$name}_reload_options() {
-            var sel = document.getElementById("{$name}_filter");
-            var group = sel.options[sel.selectedIndex].value;
-            var elem = document.getElementById("{$name}_wrap");
-            if (elem !== null) {
-                elem.outerHTML = "<textarea id=\"{$name}_textarea\" name=\"{$name}\" rows=\"{$op['rows']}\" cols=\"{$cols}\" class=\"{$name}_class\"> </textarea>";
+    function {$name}_updateTagField (avalue,ashow,ah) {
+        var thisindex = -1; var thisshow = '';
+        for (index = 0; index < {$name}_myitems[{$name}_group].length; index++) {
+            if ({$name}_myitems[{$name}_group][index].value==avalue) {
+               thisindex = index;
+               break;
             }
+        }
+        if (thisindex>-1) { thisshow = {$name}_myitems[{$name}_group][thisindex].show; }
+        $('#{$name}_textarea').textext()[0].tags().addTags([ {show: thisshow, value: avalue } ]);
+    }
 
-            $('#{$name}_textarea').textext({
-                plugins: 'autocomplete suggestions tags filter{$arrow}{$prompt}{$focus}',
-                {$prompt_text}
-                suggestions: {$name}_myitems[group],
-                {$tagItems}
-                filterItems: {$name}_myitems[group],
-                html:
-                    {
-                        hidden: '<input type="hidden" id="{$name}_hidden_input" value="[]">', // this is required for finding the hidden input to modify the name (setting it here doesn't work because it is overwritten somewhere)
-                        wrap: '<div id="{$name}_wrap" class="text-core"><div class="text-wrap"/></div>',
-                        tag: '<div class="text-tag"> <div class="text-button" style="background: {$op['tag_color']};"> <span class="text-label"/> <a class="text-remove"/> </div> </div>'
-                    },
-                ext: {
-                    itemManager: {
-                        stringToItem:
-                            function(str) {
-                                var thisindex = -1; var thisvalue = '';
-                                for (index = 0; index < {$name}_myitems[group].length; index++) {
-                                    if ({$name}_myitems[group][index].show==str) {
-                                       thisindex = index;
-                                       break;
-                                    }
-                                }
-                                if (thisindex>-1) { thisvalue = {$name}_myitems[group][thisindex].value; }
-                                return { show: str, value: thisvalue };
-                            },
-                        itemToString:
-                            function(item) {
-                                return item.show;
-                            },
-                        compareItems:
-                            function(item1, item2) {
-                                return item1.show == item2.show;
-                            }
-                    }
-                }
-            });
+    function {$name}_reload_options() {
+        // update global group variable
+        var sel = document.getElementById("{$name}_filter");
+        {$name}_group = sel.options[sel.selectedIndex].value;
+    
+        // required for updating autocompletion...
+        $('#{$name}_textarea').textext()[0].suggestions().setSuggestions({$name}_myitems[{$name}_group], false);
 
-            document.getElementById("{$name}_hidden_input").setAttribute("name","ms_experiments"); // reset name to the one expected by orsee
+        // remove all selected tags on switch
+        $("#{$name}_wrap .text-tags a.text-remove").trigger("click");
 
-            function {$name}_updateTagField (avalue,ashow,ah) {
-                var thisindex = -1; var thisshow = '';
-                for (index = 0; index < {$name}_myitems[group].length; index++) {
-                    if ({$name}_myitems[group][index].value==avalue) {
-                       thisindex = index;
-                       break;
-                    }
-                }
-                if (thisindex>-1) { thisshow = {$name}_myitems[group][thisindex].show; }
-                $('#{$name}_textarea').textext()[0].tags().addTags([ {show: thisshow, value: avalue } ]);
+        // TODO: what is it for?
+        if(typeof multiDefaults !== 'undefined'){
+            for(p = 0; p < multiDefaults.length; p++){
+                {$name}_updateTagField (multiDefaults[p],'',0);
             }
-
-            if(typeof multiDefaults !== 'undefined'){
-                for(p = 0; p < multiDefaults.length; p++){
-                    {$name}_updateTagField (multiDefaults[p],'',0);
-                }
-                multiDefaults = [];
-            }
-
-            $('#{$name}_picker').arraypick(
-                {
-                    numcols: {$op['picker_numcols']},
-                    maxnumcols: {$op['picker_maxnumcols']},
-                    arraydata: {$name}_myitems{$picker_stuff}[group]
-                },
-                {$name}_updateTagField
-            );
+            multiDefaults = [];
         }
 
-        {$name}_reload_options();
+        // overwrite old array picker
+        $('#{$name}_picker').arraypick(
+            {
+                numcols: {$op['picker_numcols']},
+                maxnumcols: {$op['picker_maxnumcols']},
+                arraydata: {$name}_myitems{$picker_stuff}[{$name}_group]
+            },
+            {$name}_updateTagField
+        );
+    }
 
-        $('#{$name}_filter').change({$name}_reload_options);
-    });
+    // create textext instance
+    $('#{$name}_textarea').textext({
+        plugins: 'autocomplete suggestions tags filter{$arrow}{$prompt}{$focus}',
+        {$prompt_text}
+        suggestions: {$name}_myitems[{$name}_group],
+        {$tagItems}
+        html:
+            {
+                wrap: '<div id="{$name}_wrap" class="text-core"><div class="text-wrap"/></div>',
+                tag: '<div class="text-tag"> <div class="text-button" style="background: {$op['tag_color']};"> <span class="text-label"/> <a class="text-remove"/> </div> </div>'
+            },
+        ext: {
+            itemManager: {
+                stringToItem:
+                    function(str) {
+                        var thisindex = -1; var thisvalue = '';
+                        for (index = 0; index < {$name}_myitems[{$name}_group].length; index++) {
+                            if ({$name}_myitems[{$name}_group][index].show==str) {
+                               thisindex = index;
+                               break;
+                            }
+                        }
+                        if (thisindex>-1) { thisvalue = {$name}_myitems[{$name}_group][thisindex].value; }
+                        return { show: str, value: thisvalue };
+                    },
+                itemToString:
+                    function(item) {
+                        return item.show;
+                    },
+                compareItems:
+                    function(item1, item2) {
+                        return item1.show == item2.show;
+                    }
+            }
+        }
+    }).bind('getSuggestions',
+            function (e, data) {
+                var textext = $('#{$name}_textarea').textext()[0];
+                query = (data ? data.query : '') || '';
+                $(this).trigger(
+                    'setSuggestions',
+                    { result: textext.itemManager().filter({$name}_myitems[{$name}_group], query) }
+                );
+            }
+    );
 
+    $('#{$name}_filter').change({$name}_reload_options);
 </script>
 JAVASCRIPT;
 
