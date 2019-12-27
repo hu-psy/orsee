@@ -341,14 +341,6 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
         // remove all selected tags on switch
         $("#{$name}_wrap .text-tags a.text-remove").trigger("click");
 
-        // TODO: what is it for?
-        if(typeof multiDefaults !== 'undefined'){
-            for(p = 0; p < multiDefaults.length; p++){
-                {$name}_updateTagField (multiDefaults[p],'',0);
-            }
-            multiDefaults = [];
-        }
-
         // overwrite old array picker
         $('#{$name}_picker').arraypick(
             {
@@ -359,6 +351,8 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
             {$name}_updateTagField
         );
     }
+
+    $('#{$name}_filter').change({$name}_reload_options);
 
     // create textext instance
     $('#{$name}_textarea').textext({
@@ -395,7 +389,7 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
                     }
             }
         }
-    }).bind('getSuggestions',
+    }).bind('getSuggestions', // rebind getSuggestions event function
             function (e, data) {
                 var textext = $('#{$name}_textarea').textext()[0];
                 query = (data ? data.query : '') || '';
@@ -405,6 +399,32 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
                 );
             }
     );
+    
+    // set defaults if present. It's used if a query is loaded or already exists
+    // i.e. by going back with browser, by load saved query or by pressing "back to query form"
+    if(typeof multiDefaults !== 'undefined'){
+        if(multiDefaults.length > 0){
+            var found_group = false;
+            outer_loop:
+            for(var key in {$name}_myitems) {
+                for(var i = 0; i < {$name}_myitems[key].length; i++) {
+                    if({$name}_myitems[key][i]['value'] == multiDefaults[0]) {
+                        {$name}_group = key;
+                        break outer_loop;
+                    }
+                }
+            } 
+
+            // select group in html-select element and update textext stuff
+            $('#{$name}_filter').val({$name}_group).change();
+
+            // set default values in tag field
+            for(p = 0; p < multiDefaults.length; p++){
+                {$name}_updateTagField (multiDefaults[p],'',0);
+            }
+        }
+        multiDefaults = [];
+    }
 
     // initialize array picker
     $('#{$name}_picker').arraypick(
@@ -416,7 +436,6 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
         {$name}_updateTagField
     );
 
-    $('#{$name}_filter').change({$name}_reload_options);
 </script>
 JAVASCRIPT;
 
