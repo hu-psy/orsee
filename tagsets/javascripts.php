@@ -406,6 +406,16 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
             }
     );
 
+    // initialize array picker
+    $('#{$name}_picker').arraypick(
+        {
+            numcols: {$op['picker_numcols']},
+            maxnumcols: {$op['picker_maxnumcols']},
+            arraydata: {$name}_myitems{$picker_stuff}[{$name}_group]
+        },
+        {$name}_updateTagField
+    );
+
     $('#{$name}_filter').change({$name}_reload_options);
 </script>
 JAVASCRIPT;
