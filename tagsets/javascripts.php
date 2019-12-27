@@ -316,7 +316,7 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
 <script type="text/javascript">
     var {$name}_myitems = {$myitems};
     {$declare_myitems_picker}
-    var {$name}_group = "Neurocognitive Psychology"; // TODO: saner default
+    var {$name}_group = Object.keys({$name}_myitems)[0]; // use first added property as default
 
     function {$name}_updateTagField (avalue,ashow,ah) {
         var thisindex = -1; var thisshow = '';
@@ -335,10 +335,10 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
         var sel = document.getElementById("{$name}_filter");
         {$name}_group = sel.options[sel.selectedIndex].value;
     
-        // required for updating autocompletion...
+        // required for updating textext's autocompletion...
         $('#{$name}_textarea').textext()[0].suggestions().setSuggestions({$name}_myitems[{$name}_group], false);
 
-        // remove all selected tags on switch
+        // remove all selected tags on change
         $("#{$name}_wrap .text-tags a.text-remove").trigger("click");
 
         // overwrite old array picker
@@ -352,6 +352,7 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
         );
     }
 
+    // bind _reload_option to change event of _filter (html-select element)
     $('#{$name}_filter').change({$name}_reload_options);
 
     // create textext instance
@@ -390,6 +391,7 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
             }
         }
     }).bind('getSuggestions', // rebind getSuggestions event function
+            // return values of current selected group filtered by query
             function (e, data) {
                 var textext = $('#{$name}_textarea').textext()[0];
                 query = (data ? data.query : '') || '';
@@ -400,11 +402,10 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
             }
     );
     
-    // set defaults if present. It's used if a query is loaded or already exists
+    // set defaults if present. It is used if a query is loaded or already exists
     // i.e. by going back with browser, by load saved query or by pressing "back to query form"
     if(typeof multiDefaults !== 'undefined'){
         if(multiDefaults.length > 0){
-            var found_group = false;
             outer_loop:
             for(var key in {$name}_myitems) {
                 for(var i = 0; i < {$name}_myitems[key].length; i++) {
