@@ -156,7 +156,7 @@ function query__get_query_form_prototypes($hide_modules=array(),$experiment_id="
                         <OPTION value="NOT" SELECTED>'.lang('without').'</OPTION>
                         <OPTION value="">'.lang('only').'</OPTION>
                     </SELECT> ';
-        $content .= lang('participants_have_participated_on_by_group');
+        $content .= lang('participants_have_participated_on_by_experimenter');
         $content .= experiment__other_experiments_by_experimenter_select_field("#experimentsparticipatedbyexperimenter#_ms_experiments",
                                                                                "participated",
                                                                                $experiment_id,
