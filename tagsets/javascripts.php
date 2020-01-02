@@ -404,12 +404,19 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
     
     // set defaults if present. It is used if a query is loaded or already exists
     // i.e. by going back with browser, by load saved query or by pressing "back to query form"
+    // assumption: unique values in multiDefaults
     if(typeof multiDefaults !== 'undefined'){
         if(multiDefaults.length > 0){
             outer_loop:
             for(var key in {$name}_myitems) {
+                var counter = 0;
                 for(var i = 0; i < {$name}_myitems[key].length; i++) {
-                    if({$name}_myitems[key][i]['value'] == multiDefaults[0]) {
+                    if(multiDefaults.indexOf({$name}_myitems[key][i]['value']) > -1) {
+                        counter++;
+                    }
+
+                    if(counter == multiDefaults.length) {
+                        // all values in multi defaults are contained in this group
                         {$name}_group = key;
                         break outer_loop;
                     }
