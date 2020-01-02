@@ -533,6 +533,33 @@ function experiment__experimenters_select_field($postvarname,$selected,$multi=tr
     return $out;
 }
 
+function experiment__experimenters_by_group_select_field($postvarname,$selected,$multi=true,$mpoptions=array()) {
+    global $lang, $preloaded_experiments, $settings;
+
+    $out="";
+    if (!(is_array($preloaded_experiments) && count($preloaded_experiments)>0))
+    $preloaded_experiments=experiment__preload_experiments();
+    $experimenters=experiment__load_experimenters();
+
+    $mylist=array();
+    foreach($preloaded_experiments as $e) {
+        foreach(explode(',',$e["experimenter"]) as $exp) {
+            $id = trim($exp,"|");
+            $name = $experimenters[$id]["adminname"];
+            $mylist[$e["experiment_class"]][$id] = $name;
+        }
+    }
+
+    ksort($mylist);
+
+    if (!is_array($mpoptions)) $mpoptions=array();
+    if (!isset($mpoptions['picker_icon'])) $mpoptions['picker_icon']='cogs';
+
+    $out.= get_filtered_multi_picker($postvarname, $mylist, $selected, $mpoptions);
+
+    return $out;
+}
+
 function experiment__experiment_class_select_field($postvarname,$selected,$multi=true,$mpoptions=array()) {
     // $postvarname - name of form field
     // selected - array of pre-selected class ids

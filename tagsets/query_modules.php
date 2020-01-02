@@ -19,7 +19,7 @@ $all_orsee_query_modules=array(
 "brackets",
 "experimentsparticipatedbygroup"
 "experimentsparticipatedbyexperimenter"
-//"experimenter_by_group" // TODO
+"experimentersbygroup"
 );
 
 
@@ -69,6 +69,28 @@ function query__get_query_form_prototypes($hide_modules=array(),$experiment_id="
         $content.=lang('participants_participated_experimenters').'<BR>';
         $content.=experiment__experimenters_select_field("#experimenters#_ms_experimenters",array(),true,array('cols'=>40,'tag_color'=>'#f1c06f','picker_color'=>'#c58720','picker_maxnumcols'=>3));
         $prototype['content']=$content; $prototypes[]=$prototype;
+        break;
+
+    case "experimentersbygroup":
+        $prototype=array('type' => 'experimentersbygroup_multiselect',
+                         'displayname' => lang('query_experimenters_by_group'),
+                         'field_name_placeholder' => '#experimentersbygroup#'
+                        );
+        $content = '<SELECT name="not">
+                        <OPTION value="NOT" SELECTED>'.lang('without').'</OPTION>
+                        <OPTION value="">'.lang('only').'</OPTION>
+                    </SELECT> ';
+        $content .= lang('participants_participated_experimenters_by_group');
+        $content .= experiment__experimenters_by_group_select_field("#experimentersbygroup#_ms_experimenters",
+                                                                    array(),
+                                                                    true,
+                                                                    array('cols' => 80,
+                                                                          'tag_color' => '#a8a8ff',
+                                                                          'picker_color' => '#0000ff',
+                                                                          'picker_maxnumcols' => $settings['query_experiment_list_nr_columns'])
+                                                                   );
+        $prototype['content'] = $content;
+        $prototypes[] = $prototype;
         break;
 
     case "experimentsassigned":
@@ -423,6 +445,7 @@ function query__get_query_array($posted_array,$experiment_id="") {
                 break;
 
             case "experimenters":
+            case "experimentersbygroup":
                 $ctype='subquery';
                 // clause
                 $clause='participant_id ';
@@ -659,6 +682,7 @@ function query__get_pseudo_query_array($posted_array) {
                 $text.=': '.experiment__experiment_class_field_to_list($params['ms_classes']);
                 break;
             case "experimenters":
+            case "experimentersbygroup":
                 $text=query__pseudo_query_not_without($params);
                 $text.=' '.lang('participants_participated_experimenters');
                 $text.=': '.experiment__list_experimenters($params['ms_experimenters'],false,true);
