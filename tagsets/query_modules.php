@@ -158,15 +158,15 @@ function query__get_query_form_prototypes($hide_modules=array(),$experiment_id="
                     </SELECT> ';
         $content .= lang('participants_have_participated_on_by_group');
         $content .= experiment__other_experiments_by_experimenter_select_field("#experimentsparticipatedbyexperimenter#_ms_experiments",
-                                                                        "participated",
-                                                                        $experiment_id,
-                                                                        array(),
-                                                                        true,
-                                                                        array('cols' => 80,
-                                                                              'tag_color' => '#a8a8ff',
-                                                                              'picker_color' => '#0000ff',
-                                                                              'picker_maxnumcols' => $settings['query_experiment_list_nr_columns'])
-                                                                       );
+                                                                               "participated",
+                                                                               $experiment_id,
+                                                                               array(),
+                                                                               true,
+                                                                               array('cols' => 80,
+                                                                                     'tag_color' => '#a8a8ff',
+                                                                                     'picker_color' => '#0000ff',
+                                                                                     'picker_maxnumcols' => $settings['query_experiment_list_nr_columns'])
+                                                                              );
         $prototype['content'] = $content;
         $prototypes[] = $prototype;
         break;
