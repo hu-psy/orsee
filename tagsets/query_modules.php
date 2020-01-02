@@ -17,8 +17,8 @@ $all_orsee_query_modules=array(
 "experimentsassigned",
 "randsubset",
 "brackets",
-"experimentsparticipatedbygroup"
-"experimentsparticipatedbyexperimenter"
+"experimentsparticipatedbygroup",
+"experimentsparticipatedbyexperimenter",
 "experimentersbygroup"
 );
 
