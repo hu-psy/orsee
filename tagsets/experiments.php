@@ -877,6 +877,8 @@ function experiment__other_experiments_by_group_select_field($postvarname,$type=
         }
     }
 
+    ksort($mylist);
+
     if (!is_array($mpoptions)) $mpoptions=array();
     if (!isset($mpoptions['picker_icon'])) $mpoptions['picker_icon']='cogs';
 
@@ -918,6 +920,8 @@ function experiment__other_experiments_by_experimenter_select_field($postvarname
             }
         }
     }
+
+    ksort($mylist);
 
     if (!is_array($mpoptions)) $mpoptions=array();
     if (!isset($mpoptions['picker_icon'])) $mpoptions['picker_icon']='cogs';
