@@ -190,8 +190,10 @@ function get_multi_picker($name,$data,$selected=array(),$options=array()) {
 }
 
 function get_filtered_multi_picker($name,$data,$selected=array(),$options=array()) {
+    if (!is_array($data))
+        return '';
+
     global $settings;
-    $out='';
     $op=array(
         'prompt_text'=>'Choose ...',
         'show_prompt'=>true,
@@ -215,9 +217,6 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
             if (isset($op[$key])) $op[$key]=$value;
         }
     }
-
-    if (!is_array($data))
-        return $out;
 
     // create json data for textex, but also look for max length entry
     $exps=array();
@@ -281,16 +280,9 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
     $cols = $op['cols']+10;
     $textarea = "<textarea id=\"{$name}_textarea\" name=\"{$name}\" rows=\"{$op['rows']}\" cols=\"{$cols}\" class=\"{$name}_class\"> </textarea>";
 
+    $picker = '';
     if ($op['show_picker']) {
         $picker = "<i id=\"{$name}_picker\" class=\"fa fa-{$op['picker_icon']} fa-fw\" style=\"padding-left: 5px; vertical-align: top; margin-top: 5px; color: {$op['picker_color']}\"></i>";
-    } else {
-        $picker = "";
-    }
-
-    if (isset($settings['multipicker_left_or_right']) && $settings['multipicker_left_or_right']=='right') {
-        $out.= $filter . $textarea . $picker;
-    } else {
-        $out.= $filter . $picker . $textarea;
     }
 
     $declare_myitems_picker = $picker_stuff = '';
@@ -311,6 +303,12 @@ function get_filtered_multi_picker($name,$data,$selected=array(),$options=array(
     $tagsItems = '';
     if ($selitems)
         $tagsItems = "tagsItems: {$selitems},";
+
+    if (isset($settings['multipicker_left_or_right']) && $settings['multipicker_left_or_right']=='right') {
+        $out = $filter . $textarea . $picker;
+    } else {
+        $out = $filter . $picker . $textarea;
+    }
 
     $out .= <<<JAVASCRIPT
 <script type="text/javascript">

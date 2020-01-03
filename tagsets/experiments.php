@@ -536,9 +536,9 @@ function experiment__experimenters_select_field($postvarname,$selected,$multi=tr
 function experiment__experimenters_by_group_select_field($postvarname,$selected,$multi=true,$mpoptions=array()) {
     global $lang, $preloaded_experiments, $settings;
 
-    $out="";
     if (!(is_array($preloaded_experiments) && count($preloaded_experiments)>0))
-    $preloaded_experiments=experiment__preload_experiments();
+        $preloaded_experiments=experiment__preload_experiments();
+
     $experimenters=experiment__load_experimenters();
 
     $mylist=array();
@@ -555,9 +555,7 @@ function experiment__experimenters_by_group_select_field($postvarname,$selected,
     if (!is_array($mpoptions)) $mpoptions=array();
     if (!isset($mpoptions['picker_icon'])) $mpoptions['picker_icon']='cogs';
 
-    $out.= get_filtered_multi_picker($postvarname, $mylist, $selected, $mpoptions);
-
-    return $out;
+    return get_filtered_multi_picker($postvarname, $mylist, $selected, $mpoptions);
 }
 
 function experiment__experiment_class_select_field($postvarname,$selected,$multi=true,$mpoptions=array()) {
@@ -881,9 +879,8 @@ function experiment__other_experiments_by_group_select_field($postvarname,$type=
     // selected - array of pre-selected experimenter usernames
     global $lang, $preloaded_experiments, $settings;
 
-    $out="";
     if (!(is_array($preloaded_experiments) && count($preloaded_experiments)>0))
-    $preloaded_experiments=experiment__preload_experiments();
+        $preloaded_experiments = experiment__preload_experiments();
 
     $mylist=array();
     foreach($preloaded_experiments as $e) {
@@ -909,10 +906,7 @@ function experiment__other_experiments_by_group_select_field($postvarname,$type=
     if (!is_array($mpoptions)) $mpoptions=array();
     if (!isset($mpoptions['picker_icon'])) $mpoptions['picker_icon']='cogs';
 
-    $experimentclasses=experiment__load_experimentclassnames();
-    $out.= get_filtered_multi_picker($postvarname, $mylist, $selected, $mpoptions);
-
-    return $out;
+    return get_filtered_multi_picker($postvarname, $mylist, $selected, $mpoptions);
 }
 
 function experiment__other_experiments_by_experimenter_select_field($postvarname,$type="assigned",$experiment_id="",$selected,$multi=true,$mpoptions=array()) {
@@ -920,9 +914,8 @@ function experiment__other_experiments_by_experimenter_select_field($postvarname
     // selected - array of pre-selected experimenter usernames
     global $lang, $preloaded_experiments, $settings;
 
-    $out="";
     if (!(is_array($preloaded_experiments) && count($preloaded_experiments)>0))
-    $preloaded_experiments=experiment__preload_experiments();
+        $preloaded_experiments=experiment__preload_experiments();
     $experimenters=experiment__load_experimenters();
 
     $mylist=array();
@@ -943,7 +936,7 @@ function experiment__other_experiments_by_experimenter_select_field($postvarname
 
             foreach(explode(',',$e['experimenter']) as $exp) {
                 $name = $experimenters[trim($exp,"|")]["adminname"];
-                $mylist[$name][$e['experiment_id']]=$ename;
+                $mylist[$name][$e['experiment_id']] = $ename;
             }
         }
     }
@@ -953,8 +946,6 @@ function experiment__other_experiments_by_experimenter_select_field($postvarname
     if (!is_array($mpoptions)) $mpoptions=array();
     if (!isset($mpoptions['picker_icon'])) $mpoptions['picker_icon']='cogs';
 
-    $out.= get_filtered_multi_picker($postvarname, $mylist, $selected, $mpoptions);
-
-    return $out;
+    return get_filtered_multi_picker($postvarname, $mylist, $selected, $mpoptions);
 }
 ?>
