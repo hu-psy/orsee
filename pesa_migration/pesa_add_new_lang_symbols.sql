@@ -50,7 +50,7 @@ insert into ##new_db##.or_lang
 select max(lang_id)+1 ,'y', -1, 'lang', 'query_experiments_participated_by_group', 'Prior participation - experiment by group', 'Vorherige Teilnahme - Experiment (gruppiert nach Gruppen)' from ##new_db##.or_lang;
 
 insert into ##new_db##.or_lang
-select max(lang_id)+1 ,'y', -1, 'lang', 'query_experiments_participated_by_experimenter', 'Prior participation - experiment by experimenter', 'Vorherige Teilnahme - Experiment (gruppiert nach Experimenter)' from ##new_db##.or_lang;
+select max(lang_id)+1 ,'y', -1, 'lang', 'query_experiments_participated_by_experimenter', 'Prior participation - experiment by experimenter', 'Vorherige Teilnahme - Experiment (gruppiert nach Experimentator)' from ##new_db##.or_lang;
 
 insert into ##new_db##.or_lang
 select max(lang_id)+1 ,'y', -1, 'lang', 'participants_participated_experimenters_by_group', 'subjects who participated in an experiment of one of the following experimenters of the following group', 'Teilnehmer, die an einem Experiment einer der folgenden Experimentatoren der folgenden Gruppe teilgenommen haben' from ##new_db##.or_lang;
