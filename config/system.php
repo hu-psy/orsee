@@ -575,15 +575,6 @@ $system__options_general[]=array(
 );
 
 $system__options_general[]=array(
-'option_name'=>'subject_cancellation_hours_before_start',
-'option_text'=>'If yes: Allow cancellation until how many hours before session start?',
-'type'=>'textline',
-'default_value'=>'6',
-'size'=>'3',
-'maxlength'=>'3',
-);
-
-$system__options_general[]=array(
 'option_name'=>'subject_cancellation_participation_status',
 'option_text'=>'If yes: Participation status to be assigned to subjects who canceled their session enrollment',
 'type'=>'plain',
