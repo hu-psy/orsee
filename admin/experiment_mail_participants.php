@@ -49,6 +49,38 @@ if ($proceed) {
         $sitem['content_type']='experiment_invitation_mail';
         $sitem['content_name']=$experiment_id;
 
+        // check for empty parts
+        $non_empty_subject = array();
+        $empty_subject = array();
+        $non_empty_body = array();
+        $empty_body = array();
+        foreach ($inv_langs as $inv_lang) {
+            if(empty($sitem[$inv_lang.'_subject'])) {
+                $empty_subject[] = $inv_lang;
+            } else {
+                $non_empty_subject[] = $inv_lang;
+            }
+
+            if(empty($sitem[$inv_lang.'_body'])) {
+                $empty_body[] = $inv_lang;
+            } else {
+                $non_empty_body[] = $inv_lang;
+            }
+        }
+
+        if(empty(non_empty_body) or empty(non_empty_subject)) {
+            // TODO: handle error
+        }
+
+        // fill empty parts with text from other languages
+        foreach ($empty_subject as $s){
+            $sitem[$s.'_subject'] = $sitem[$non_empty_subject[0].'_subject'];
+        }
+
+        foreach ($empty_body as $b){
+            $sitem[$b.'_body'] = $sitem[$non_empty_body[0].'_body'];
+        }
+
         // prepare lang stuff
         foreach ($inv_langs as $inv_lang) {
             $sitem[$inv_lang]=$sitem[$inv_lang.'_subject']."\n".$sitem[$inv_lang.'_body'];
