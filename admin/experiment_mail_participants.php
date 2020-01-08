@@ -119,7 +119,7 @@ if ($proceed) {
 
         // set defaults if not existent
         if (!$subject) {
-            $subject=load_language_symbol('def_expmail_subject',$inv_lang);
+            $subject=load_language_symbol('def_expmail_subject_example',$inv_lang);
         }
 
         if (!$body) {
@@ -139,11 +139,10 @@ if ($proceed) {
         echo '
             <TR>
                 <TD>
-                    '.lang('subject').':
+                    '.lang('subject').': '.stripslashes($subject).'
                 </TD>
                 <TD>
-                    <INPUT type=text name="'.$inv_lang.'_subject" size=30 maxlength=80 value="'.
-                        stripslashes($subject).'">
+                    <INPUT type=text name="'.$inv_lang.'_subject" size=30 maxlength=80 value="">
                 </TD>
             </TR>
                     <TR>
