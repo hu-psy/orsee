@@ -434,6 +434,20 @@ $system__options_general[]=array(
 );
 
 $system__options_general[]=array(
+'option_name'=>'include_cancel_until_in_invitation',
+'option_text'=>'Include "cancel until ..." in session list in invitation email?',
+'type'=>'select_yesno_switchy',
+'default_value'=>'y'
+);
+
+$system__options_general[]=array(
+'option_name'=>'include_cancel_until_on_enrolment_page',
+'option_text'=>'Include "cancel until ..." in session list on enrolment webpage?',
+'type'=>'select_yesno_switchy',
+'default_value'=>'y'
+);
+
+$system__options_general[]=array(
 'option_name'=>'include_weekday_in_session_name',
 'option_text'=>'Include weekday in session date whereever displayed?',
 'type'=>'select_yesno_switchy',

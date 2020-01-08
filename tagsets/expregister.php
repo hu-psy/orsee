@@ -21,6 +21,7 @@ function expregister__get_invitations($participant_id) {
     while ($varray = pdo_fetch_assoc($result)) {
         $varray['session_unixtime']=ortime__sesstime_to_unixtime($varray['session_start']);
         $varray['registration_unixtime']=sessions__get_registration_end($varray);
+        $varray['cancellation_unixtime']=sessions__get_cancellation_end($varray);
         $varray['session_full']=sessions__session_full("",$varray);
         $now=time();
         if( $now < $varray['session_unixtime']) {
@@ -71,6 +72,10 @@ function expregister__list_invited_for($participant) {
         if (or_setting('include_sign_up_until_on_enrolment_page')) {
             echo ",  ".lang('registration_until')." ";
             echo ortime__format($s['registration_unixtime'],'',lang('lang'));
+        }
+        if (or_setting('include_cancel_until_on_enrolment_page')) {
+            echo ",  ".lang('cancellation_until')." ";
+            echo ortime__format($s['cancellation_unixtime'],'',lang('lang'));
         }
         if (or_setting('allow_public_session_note') && isset($s['public_session_note']) && trim($s['public_session_note'])) {
             echo '<BR><i>'.lang('note').': '.trim($s['public_session_note']).'</i>';
