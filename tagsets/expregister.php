@@ -21,7 +21,7 @@ function expregister__get_invitations($participant_id) {
     while ($varray = pdo_fetch_assoc($result)) {
         $varray['session_unixtime']=ortime__sesstime_to_unixtime($varray['session_start']);
         $varray['registration_unixtime']=sessions__get_registration_end($varray);
-        $varray['cancellation_unixtime']=sessions__get_cancellation_end($varray);
+        $varray['cancellation_unixtime']=sessions__get_cancellation_deadline($varray);
         $varray['session_full']=sessions__session_full("",$varray);
         $now=time();
         if( $now < $varray['session_unixtime']) {

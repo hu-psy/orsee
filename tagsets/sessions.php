@@ -291,25 +291,6 @@ function sessions__get_registration_end($alist,$session_id="",$experiment_id="")
     return ortime__sesstime_to_unixtime($registration_end);
 }
 
-function sessions__get_cancellation_end($alist,$session_id="",$experiment_id="") {
-    if ($session_id) {
-        $pars=array(':session_id'=>$session_id);
-        $query="SELECT * FROM ".table('sessions')." WHERE session_id=:session_id";
-        $alist=orsee_query($query,$pars);
-    } elseif ($experiment_id) {
-        $pars=array(':experiment_id'=>$experiment_id);
-        $query="SELECT ".table('sessions').".*
-            FROM ".table('experiments').", ".table('sessions')."
-            WHERE ".table('experiments').".experiment_id=".table('sessions').".experiment_id
-            AND experiment_type='laboratory'
-            AND ".table('experiments').".experiment_id=:experiment_id
-            ORDER BY session_start DESC
-            LIMIT 1";
-        $alist=orsee_query($query,$pars);
-    }
-    $cancellation_end = ortime__add_hourmin_to_sesstime($alist['session_start'],0-$alist['cancellation_end_hours']);
-    return ortime__sesstime_to_unixtime($cancellation_end);
-}
 
 function sessions__get_cancellation_deadline($alist,$session_id="",$experiment_id="") {
     global $settings;

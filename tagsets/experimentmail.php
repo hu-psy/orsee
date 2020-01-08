@@ -166,7 +166,7 @@ function experimentmail__get_session_list($experiment_id,$tlang="") {
             }
             if (or_setting('include_cancel_until_in_invitation')) {
                 $list.=', '.lang('registration_until').' '.
-                    ortime__format(sessions__get_cancellation_end($s),'',lang('lang'));
+                    ortime__format(sessions__get_cancellation_deadline($s),'',lang('lang'));
             }
             $list.="\n";
         }
