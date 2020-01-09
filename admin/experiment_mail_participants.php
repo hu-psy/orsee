@@ -68,17 +68,17 @@ if ($proceed) {
             }
         }
 
-        if(empty(non_empty_body) or empty(non_empty_subject)) {
-            // TODO: handle error
-        }
-
         // fill empty parts with text from other languages
-        foreach ($empty_subject as $s){
-            $sitem[$s.'_subject'] = $sitem[$non_empty_subject[0].'_subject'];
+        if(!empty($non_empty_subject)) {
+            foreach ($empty_subject as $s){
+                $sitem[$s.'_subject'] = $sitem[$non_empty_subject[0].'_subject'];
+            }
         }
 
-        foreach ($empty_body as $b){
-            $sitem[$b.'_body'] = $sitem[$non_empty_body[0].'_body'];
+        if(!empty($non_empty_body)) {
+            foreach ($empty_body as $b){
+                $sitem[$b.'_body'] = $sitem[$non_empty_body[0].'_body'];
+            }
         }
 
         // prepare lang stuff
@@ -98,8 +98,16 @@ if ($proceed) {
         if ($done) message (lang('changes_saved'));
         else message (lang('database_error'));
 
-        if ($preview) {
+        if ($save) {
+            message(lang('mail_text_saved'));
+            log__admin("experiment_edit_invitation_mail","experiment:".$experiment['experiment_name']);
+            redirect ('admin/'.thisdoc().'?experiment_id='.$experiment_id);
+        } elseif($preview) {
             redirect ('admin/experiment_mail_preview.php?experiment_id='.$experiment_id);
+        } elseif(empty($non_empty_subject) or empty($non_empty_body)){
+            // allow sending of emails only if at least one subject and one message body are provided
+            message(lang('error_empty_mail_parts'));
+            redirect ('admin/'.thisdoc().'?experiment_id='.$experiment_id);
         } elseif ($send || $sendall) {
             // send mails!
 
@@ -115,11 +123,6 @@ if ($proceed) {
                 log__admin("experiment_send_invitations","experiment:".$experiment['experiment_name']);
                 redirect ("admin/experiment_mail_participants.php?experiment_id=".$experiment_id);
             }
-
-        } else {
-            message(lang('mail_text_saved'));
-            log__admin("experiment_edit_invitation_mail","experiment:".$experiment['experiment_name']);
-            redirect ('admin/'.thisdoc().'?experiment_id='.$experiment_id);
         }
     }
 }
