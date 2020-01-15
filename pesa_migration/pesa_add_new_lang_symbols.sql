@@ -44,7 +44,25 @@ insert into ##new_db##.or_lang
 select max(lang_id)+1 ,'y', -1, 'lang', 'you_have_to_year_of_birth', 'Please enter your year of birth.', 'Bitte geben Sie Ihr Geburtsjahr an.' from ##new_db##.or_lang;
 
 insert into ##new_db##.or_lang
+
 select max(lang_id)+1 ,'y', -1, 'lang', 'criteria', 'Criteria', 'Kriterien' from ##new_db##.or_lang;
 
 insert into ##new_db##.or_lang
 select max(lang_id)+1 ,'y', -1, 'lang', 'check_suitability', 'Please check if you are really eligible for this experiment.', 'Bitte überprüfen Sie, ob Sie wirklich für das Experiment geeignet sind.' from ##new_db##.or_lang;
+
+select max(lang_id)+1 ,'y', -1, 'lang', 'query_experimenters_by_group', 'Prior participation - experimenter by group', 'Vorherige Teilnahme - Experimentator (gruppiert nach Gruppen)' from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang
+select max(lang_id)+1 ,'y', -1, 'lang', 'query_experiments_participated_by_group', 'Prior participation - experiment by group', 'Vorherige Teilnahme - Experiment (gruppiert nach Gruppen)' from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang
+select max(lang_id)+1 ,'y', -1, 'lang', 'query_experiments_participated_by_experimenter', 'Prior participation - experiment by experimenter', 'Vorherige Teilnahme - Experiment (gruppiert nach Experimentator)' from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang
+select max(lang_id)+1 ,'y', -1, 'lang', 'participants_participated_experimenters_by_group', 'subjects who participated in an experiment of one of the following experimenters of the following group', 'Teilnehmer, die an einem Experiment einer der folgenden Experimentatoren der folgenden Gruppe teilgenommen haben' from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang
+select max(lang_id)+1 ,'y', -1, 'lang', 'participants_have_participated_on_by_group', 'subjects who have participated in one of the following experiments of the following group', 'Teilnehmer, die an einem der folgenden Experimente der folgenden Gruppe teilgenommen haben' from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang
+select max(lang_id)+1 ,'y', -1, 'lang', 'participants_have_participated_on_by_experimenter', 'subjects who have participated in one of the following experiments of the following experimenter', 'Teilnehmer, die an einem der folgenden Experimente des folgenden Experimentators teilgenommen haben' from ##new_db##.or_lang;

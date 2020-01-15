@@ -969,6 +969,18 @@ $system__options_defaults[]=array(
 );
 
 $system__options_defaults[]=array(
+'option_name'=>'maximum_assignments',
+'option_text'=>'Participant query: maximum number of assigned participants',
+'type'=>'select_numbers',
+'default_value'=>'400',
+'value_begin'=>'0',
+'value_end'=>'1200',
+'value_step'=>'100',
+'values_reverse'=>'n',
+'include_none_option'=>'n'
+);
+
+$system__options_defaults[]=array(
 'option_name'=>'queryform_partsearchactive_savedqueries_numberofentries',
 'option_text'=>'Participant query: Number of saved queries to show in query form when searching for active participants',
 'type'=>'textline',
