@@ -533,6 +533,31 @@ function experiment__experimenters_select_field($postvarname,$selected,$multi=tr
     return $out;
 }
 
+function experiment__experimenters_by_group_select_field($postvarname,$selected,$multi=true,$mpoptions=array()) {
+    global $lang, $preloaded_experiments, $settings;
+
+    if (!(is_array($preloaded_experiments) && count($preloaded_experiments)>0))
+        $preloaded_experiments=experiment__preload_experiments();
+
+    $experimenters=experiment__load_experimenters();
+
+    $mylist=array();
+    foreach($preloaded_experiments as $e) {
+        foreach(explode(',',$e["experimenter"]) as $exp) {
+            $id = trim($exp,"|");
+            $name = $experimenters[$id]["adminname"];
+            $mylist[$e["experiment_class"]][$id] = $name;
+        }
+    }
+
+    ksort($mylist);
+
+    if (!is_array($mpoptions)) $mpoptions=array();
+    if (!isset($mpoptions['picker_icon'])) $mpoptions['picker_icon']='cogs';
+
+    return get_filtered_multi_picker($postvarname, $mylist, $selected, $mpoptions);
+}
+
 function experiment__experiment_class_select_field($postvarname,$selected,$multi=true,$mpoptions=array()) {
     // $postvarname - name of form field
     // selected - array of pre-selected class ids
@@ -752,13 +777,14 @@ function experiment__preload_experiments() {
                 return $preloaded_experiments;
     else {
         $experiments=array();
-        $query="SELECT experiment_id, experiment_name, experimenter from ".table('experiments');
+        $query="SELECT experiment_id, experiment_name, experimenter, experiment_class from ".table('experiments');
         $result=or_query($query);
         while ($line=pdo_fetch_assoc($result)) {
             $experiments[$line['experiment_id']]=array('time'=>'','start_date'=>'','end_date'=>'','assigned'=>'n','participated'=>'n');
             $experiments[$line['experiment_id']]['experiment_id']=$line['experiment_id'];
             $experiments[$line['experiment_id']]['experiment_name']=$line['experiment_name'];
             $experiments[$line['experiment_id']]['experimenter']=$line['experimenter'];
+            $experiments[$line['experiment_id']]['experiment_class']=experiment__experiment_class_field_to_list($line['experiment_class']); // TODO: hugly... function called for each experiment
         }
         $query="SELECT experiment_id,
                 min(session_start) as start_date,
@@ -848,4 +874,78 @@ function experiment__other_experiments_select_field($postvarname,$type="assigned
     return $out;
 }
 
+function experiment__other_experiments_by_group_select_field($postvarname,$type="assigned",$experiment_id="",$selected,$multi=true,$mpoptions=array()) {
+    // $postvarname - name of form field
+    // selected - array of pre-selected experimenter usernames
+    global $lang, $preloaded_experiments, $settings;
+
+    if (!(is_array($preloaded_experiments) && count($preloaded_experiments)>0))
+        $preloaded_experiments = experiment__preload_experiments();
+
+    $mylist=array();
+    foreach($preloaded_experiments as $e) {
+        if ($e['experiment_id'] != $experiment_id
+            && ($type=='all'
+                || ($type=='assigned' && $e['assigned']=='y')
+                || ($type=='participated' && $e['participated']=='y')))
+        {
+            $ename=$e['experiment_name'];
+            if ($e['time'] || $e['experimenter']) {
+                $ename.=' (';
+                if ($e['experimenter']) $ename.=experiment__list_experimenters($e['experimenter'],false,false);
+                if ($e['time'] && $e['experimenter']) $ename.=', ';
+                if ($e['time']) $ename.=ortime__format(ortime__sesstime_to_unixtime($e['start_date']),'hide_time:true').'-'.ortime__format(ortime__sesstime_to_unixtime($e['end_date']),'hide_time:true');
+                $ename.=')';
+            }
+            $mylist[$e['experiment_class']][$e['experiment_id']]=$ename;
+        }
+    }
+
+    ksort($mylist);
+
+    if (!is_array($mpoptions)) $mpoptions=array();
+    if (!isset($mpoptions['picker_icon'])) $mpoptions['picker_icon']='cogs';
+
+    return get_filtered_multi_picker($postvarname, $mylist, $selected, $mpoptions);
+}
+
+function experiment__other_experiments_by_experimenter_select_field($postvarname,$type="assigned",$experiment_id="",$selected,$multi=true,$mpoptions=array()) {
+    // $postvarname - name of form field
+    // selected - array of pre-selected experimenter usernames
+    global $lang, $preloaded_experiments, $settings;
+
+    if (!(is_array($preloaded_experiments) && count($preloaded_experiments)>0))
+        $preloaded_experiments=experiment__preload_experiments();
+    $experimenters=experiment__load_experimenters();
+
+    $mylist=array();
+    foreach($preloaded_experiments as $e) {
+        if ($e['experiment_id'] != $experiment_id
+            && ($type=='all'
+                || ($type=='assigned' && $e['assigned']=='y')
+                || ($type=='participated' && $e['participated']=='y')))
+        {
+            $ename=$e['experiment_name'];
+            if ($e['time'] || $e['experimenter']) {
+                $ename.=' (';
+                if ($e['experimenter']) $ename.=experiment__list_experimenters($e['experimenter'],false,false);
+                if ($e['time'] && $e['experimenter']) $ename.=', ';
+                if ($e['time']) $ename.=ortime__format(ortime__sesstime_to_unixtime($e['start_date']),'hide_time:true').'-'.ortime__format(ortime__sesstime_to_unixtime($e['end_date']),'hide_time:true');
+                $ename.=')';
+            }
+
+            foreach(explode(',',$e['experimenter']) as $exp) {
+                $name = $experimenters[trim($exp,"|")]["adminname"];
+                $mylist[$name][$e['experiment_id']] = $ename;
+            }
+        }
+    }
+
+    ksort($mylist);
+
+    if (!is_array($mpoptions)) $mpoptions=array();
+    if (!isset($mpoptions['picker_icon'])) $mpoptions['picker_icon']='cogs';
+
+    return get_filtered_multi_picker($postvarname, $mylist, $selected, $mpoptions);
+}
 ?>

@@ -189,6 +189,265 @@ function get_multi_picker($name,$data,$selected=array(),$options=array()) {
     return $out;
 }
 
+function get_filtered_multi_picker($name,$data,$selected=array(),$options=array()) {
+    if (!is_array($data))
+        return '';
+
+    global $settings;
+    $op=array(
+        'prompt_text'=>'Choose ...',
+        'show_prompt'=>true,
+        'show_arrow'=>true,
+        'show_clear'=>false,
+        'focus_effect'=>true,
+        'show_picker'=>true,
+        'picker_icon'=>'tags',
+        'picker_color'=>'#555555',
+        'picker_numcols'=>0,
+        'picker_maxnumcols'=>0,
+        'tag_color'=>'#e2e6f0',
+        'rows'=>1,
+        'cols'=>50,
+        'trim_display_values'=>false,
+        'trim_picker_values'=>true,
+        'trim_to_chars'=>30
+    );
+    if (is_array($options)) {
+        foreach ($options as $key=>$value) {
+            if (isset($op[$key])) $op[$key]=$value;
+        }
+    }
+
+    // create json data for textex, but also look for max length entry
+    $exps=array();
+    $groups=array();
+    $maxlen = 0;
+    foreach ($data as $group => $elements) {
+        foreach($elements as $key => $value) {
+            $exps[] = '{ show: "'.trim($value)."\", value: \"{$key}\", disabled: false }";
+            $thislen = strlen(trim($value));
+            if ($thislen>$maxlen) $maxlen = $thislen;
+        }
+
+        $groups[] = "\"{$group}\" : [ " . implode(" , ",$exps) . ' ]';
+        $exps = array();
+    }
+
+    $myitems = "{ " . implode(" , ", $groups) . " }";
+    $myitems_picker = "";
+
+    // if maxlen < cols, resize, otherwise trim display values
+    if ($op['cols'] >= $maxlen) {
+        $op['cols'] = $maxlen;
+    } else {
+        if ($op['trim_display_values'] || $op['trim_picker_values']) {
+            $temp_data=array();
+            $exps=array();
+            $groups=array();
+
+            foreach ($data as $group => $elements) {
+                foreach($elements as $key => $value) {
+                    if (strlen($value)>$op['trim_to_chars']) $value=substr($value,0,$op['trim_to_chars']-3).'...';
+                    $value = trim($value);
+                    $exps[] = "{ show: \"{$value}\", value: \"{$key}\", disabled: false }";
+                }
+
+                $groups[] = "\"{$group}\" : [ " . implode(" , ",$exps) . ' ]';
+                $exps = array();
+            }
+
+            $myitems_picker = '{ '.implode(" , ",$groups).' }';
+            if ($op['trim_display_values']) $myitems = $myitems_picker;
+            if (!$op['trim_picker_values']) $myitems_picker =  "";
+        }
+    }
+
+    $selitems="";
+    if (is_array($selected) && count($selected)>0) {
+        $temp_data=array();
+        foreach ($selected as $id) {
+            if (isset($data[$id])) $temp_data[]= '{ show: "'.$data[$id].'", value: "'.$id.'"}';
+        }
+        $selitems='[ '.implode(" , ",$temp_data).' ]';
+    }
+
+    $filter = "<select id={$name}_filter>";
+    foreach ($data as $group => $elements) {
+        $filter .= "<option value=\"{$group}\">{$group}</option>\n";
+    }
+    $filter .= "</select><br>";
+
+    $cols = $op['cols']+10;
+    $textarea = "<textarea id=\"{$name}_textarea\" name=\"{$name}\" rows=\"{$op['rows']}\" cols=\"{$cols}\" class=\"{$name}_class\"> </textarea>";
+
+    $picker = '';
+    if ($op['show_picker']) {
+        $picker = "<i id=\"{$name}_picker\" class=\"fa fa-{$op['picker_icon']} fa-fw\" style=\"padding-left: 5px; vertical-align: top; margin-top: 5px; color: {$op['picker_color']}\"></i>";
+    }
+
+    $declare_myitems_picker = $picker_stuff = '';
+    if ($myitems_picker) {
+        $declare_myitems_picker ="var {$name}_myitems_picker = {$myitems_picker};";
+        $picker_stuff = "_picker";
+    }
+
+    $arrow = $prompt = $prompt_text = $focus = '';
+    if ($op['show_arrow']) $arrow = " arrow";
+    if ($op['show_prompt']) {
+        $prompt = " prompt";
+        if ($op['prompt_text'])
+            $prompt_text = "prompt: '{$op['prompt_text']}',";
+    }
+    if ($op['focus_effect']) $focus = " focus";
+
+    $tagsItems = '';
+    if ($selitems)
+        $tagsItems = "tagsItems: {$selitems},";
+
+    if (isset($settings['multipicker_left_or_right']) && $settings['multipicker_left_or_right']=='right') {
+        $out = $filter . $textarea . $picker;
+    } else {
+        $out = $filter . $picker . $textarea;
+    }
+
+    $out .= <<<JAVASCRIPT
+<script type="text/javascript">
+    var {$name}_myitems = {$myitems};
+    {$declare_myitems_picker}
+    var {$name}_group = Object.keys({$name}_myitems)[0]; // use first added property as default
+
+    function {$name}_updateTagField (avalue,ashow,ah) {
+        var thisindex = -1; var thisshow = '';
+        for (index = 0; index < {$name}_myitems[{$name}_group].length; index++) {
+            if ({$name}_myitems[{$name}_group][index].value==avalue) {
+               thisindex = index;
+               break;
+            }
+        }
+        if (thisindex>-1) { thisshow = {$name}_myitems[{$name}_group][thisindex].show; }
+        $('#{$name}_textarea').textext()[0].tags().addTags([ {show: thisshow, value: avalue } ]);
+    }
+
+    function {$name}_reload_options() {
+        // update global group variable
+        var sel = document.getElementById("{$name}_filter");
+        {$name}_group = sel.options[sel.selectedIndex].value;
+    
+        // required for updating textext's autocompletion...
+        $('#{$name}_textarea').textext()[0].suggestions().setSuggestions({$name}_myitems[{$name}_group], false);
+
+        // remove all selected tags on change
+        $("#{$name}_wrap .text-tags a.text-remove").trigger("click");
+
+        // overwrite old array picker
+        $('#{$name}_picker').arraypick(
+            {
+                numcols: {$op['picker_numcols']},
+                maxnumcols: {$op['picker_maxnumcols']},
+                arraydata: {$name}_myitems{$picker_stuff}[{$name}_group]
+            },
+            {$name}_updateTagField
+        );
+    }
+
+    // bind _reload_option to change event of _filter (html-select element)
+    $('#{$name}_filter').change({$name}_reload_options);
+
+    // create textext instance
+    $('#{$name}_textarea').textext({
+        plugins: 'autocomplete suggestions tags filter{$arrow}{$prompt}{$focus}',
+        {$prompt_text}
+        suggestions: {$name}_myitems[{$name}_group],
+        {$tagItems}
+        html:
+            {
+                wrap: '<div id="{$name}_wrap" class="text-core"><div class="text-wrap"/></div>',
+                tag: '<div class="text-tag"> <div class="text-button" style="background: {$op['tag_color']};"> <span class="text-label"/> <a class="text-remove"/> </div> </div>'
+            },
+        ext: {
+            itemManager: {
+                stringToItem:
+                    function(str) {
+                        var thisindex = -1; var thisvalue = '';
+                        for (index = 0; index < {$name}_myitems[{$name}_group].length; index++) {
+                            if ({$name}_myitems[{$name}_group][index].show==str) {
+                               thisindex = index;
+                               break;
+                            }
+                        }
+                        if (thisindex>-1) { thisvalue = {$name}_myitems[{$name}_group][thisindex].value; }
+                        return { show: str, value: thisvalue };
+                    },
+                itemToString:
+                    function(item) {
+                        return item.show;
+                    },
+                compareItems:
+                    function(item1, item2) {
+                        return item1.show == item2.show;
+                    }
+            }
+        }
+    }).bind('getSuggestions', // rebind getSuggestions event function
+            // return values of current selected group filtered by query
+            function (e, data) {
+                var textext = $('#{$name}_textarea').textext()[0];
+                query = (data ? data.query : '') || '';
+                $(this).trigger(
+                    'setSuggestions',
+                    { result: textext.itemManager().filter({$name}_myitems[{$name}_group], query) }
+                );
+            }
+    );
+    
+    // set defaults if present. It is used if a query is loaded or already exists
+    // i.e. by going back with browser, by load saved query or by pressing "back to query form"
+    // assumption: unique values in multiDefaults
+    if(typeof multiDefaults !== 'undefined'){
+        if(multiDefaults.length > 0){
+            outer_loop:
+            for(var key in {$name}_myitems) {
+                var counter = 0;
+                for(var i = 0; i < {$name}_myitems[key].length; i++) {
+                    if(multiDefaults.indexOf({$name}_myitems[key][i]['value']) > -1) {
+                        counter++;
+                    }
+
+                    if(counter == multiDefaults.length) {
+                        // all values in multi defaults are contained in this group
+                        {$name}_group = key;
+                        break outer_loop;
+                    }
+                }
+            } 
+
+            // select group in html-select element and update textext stuff
+            $('#{$name}_filter').val({$name}_group).change();
+
+            // set default values in tag field
+            for(p = 0; p < multiDefaults.length; p++){
+                {$name}_updateTagField (multiDefaults[p],'',0);
+            }
+        }
+        multiDefaults = [];
+    }
+
+    // initialize array picker
+    $('#{$name}_picker').arraypick(
+        {
+            numcols: {$op['picker_numcols']},
+            maxnumcols: {$op['picker_maxnumcols']},
+            arraydata: {$name}_myitems{$picker_stuff}[{$name}_group]
+        },
+        {$name}_updateTagField
+    );
+
+</script>
+JAVASCRIPT;
+
+    return $out;
+}
+
 function multipicker_json_to_array($json) {
     $ret=array();
     if ($json || $json=='0') {
