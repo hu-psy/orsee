@@ -44,7 +44,7 @@ insert into ##new_db##.or_lang
 select max(lang_id)+1 ,'y', -1, 'lang', 'you_have_to_year_of_birth', 'Please enter your year of birth.', 'Bitte geben Sie Ihr Geburtsjahr an.' from ##new_db##.or_lang;
 
 insert into ##new_db##.or_lang
-select max(lang_id)+1 ,'y', -1, 'lang', 'cancellation_end_hours_before', 'Cancellation deadline (hours before start)', 'Abmeldungsende (Stunden vor Experimentbeginn)' from ##new_db##.or_lang;
+select max(lang_id)+1 ,'y', -1, 'lang', 'cancellation_end_hours_before', 'Cancellation deadline (hours before session start)', 'Abmeldungsende (Stunden vor Sessionbeginn)' from ##new_db##.or_lang;
 
 insert into ##new_db##.or_lang
 select max(lang_id)+1 ,'y', -1, 'lang', 'cancellation_until', 'cancel until', 'Abmeldung bis' from ##new_db##.or_lang;
