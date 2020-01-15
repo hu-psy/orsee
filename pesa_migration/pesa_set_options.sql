@@ -13,6 +13,7 @@ update ##new_db##.or_options set option_value = 24  where (option_id = '14260121
 update ##new_db##.or_options set option_value = 'y' where (option_id = '1426010284'); /* enable registration deadline in emails */
 /* update pesa2019.or_options set option_value = '<insert-email-here>' where (option_id = '1426010269'); /* support mail */
 
-/* enable noshow warnings */
-update ##new_db##.or_options set option_value = 'y' where option_id='1426010300';
-update ##new_db##.or_cron_jobs set enabled = 'y' where job_name="check_for_noshow_warnings";
+update ##new_db##.or_options set option_value = 'y' where option_id='1426010300'; /* enable noshow warnings */
+update ##new_db##.or_options set option_value = '3' where option_id='1426010301'; /* set max number of no shows */
+update ##new_db##.or_options set option_value = 'y' where option_id='1426010302'; /* enable automatic exclusion */
+update ##new_db##.or_cron_jobs set enabled = 'y' where job_name="check_for_noshow_warnings"; /* enable cron job for no show warings */
