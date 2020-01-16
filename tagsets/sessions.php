@@ -291,6 +291,7 @@ function sessions__get_registration_end($alist,$session_id="",$experiment_id="")
     return ortime__sesstime_to_unixtime($registration_end);
 }
 
+
 function sessions__get_cancellation_deadline($alist,$session_id="",$experiment_id="") {
     global $settings;
     if ($session_id) {
@@ -308,10 +309,7 @@ function sessions__get_cancellation_deadline($alist,$session_id="",$experiment_i
             LIMIT 1";
         $alist=orsee_query($query,$pars);
     }
-    if (isset($settings['subject_cancellation_hours_before_start']) && $settings['subject_cancellation_hours_before_start']>0)
-        $deadline_hours=$settings['subject_cancellation_hours_before_start'];
-    else $deadline_hours=0;
-    $cancellation__deadline=ortime__add_hourmin_to_sesstime($alist['session_start'],0-$deadline_hours);
+    $cancellation__deadline=ortime__add_hourmin_to_sesstime($alist['session_start'], 0-$alist['cancellation_end_hours']);
     return ortime__sesstime_to_unixtime($cancellation__deadline);
 }
 

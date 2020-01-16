@@ -125,6 +125,7 @@ if ($proceed) {
             $edit['session_reminder_hours']=$settings['session_reminder_hours_default'];
             $edit['send_reminder_on']=$settings['session_reminder_send_on_default'];
             $edit['registration_end_hours']=$settings['session_registration_end_hours_default'];
+            $edit['cancellation_end_hours']=$settings['session_cancellation_end_hours_default'];
             $session_time=0;
 
             $edit['part_needed']=$settings['lab_participants_default'];
@@ -256,6 +257,17 @@ if ($proceed) {
     helpers__select_numbers_relative("registration_end_hours",$edit['registration_end_hours'],0,
                     $settings['session_registration_end_hours_max'],2,
                     $settings['session_registration_end_hours_steps'],$session_time);
+    echo '
+            </TD>
+        </TR>';
+    echo '  <TR>
+            <TD>
+                '.lang('cancellation_end_hours_before').':
+            </TD>
+            <TD>';
+    helpers__select_numbers_relative("cancellation_end_hours",$edit['cancellation_end_hours'],0,
+                    $settings['session_cancellation_end_hours_max'],2,
+                    $settings['session_cancellation_end_hours_steps'],$session_time);
     echo '
             </TD>
         </TR>';
