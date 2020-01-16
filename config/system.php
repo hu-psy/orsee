@@ -434,6 +434,20 @@ $system__options_general[]=array(
 );
 
 $system__options_general[]=array(
+'option_name'=>'include_cancel_until_in_invitation',
+'option_text'=>'Include "cancel until ..." in session list in invitation email?',
+'type'=>'select_yesno_switchy',
+'default_value'=>'y'
+);
+
+$system__options_general[]=array(
+'option_name'=>'include_cancel_until_on_enrolment_page',
+'option_text'=>'Include "cancel until ..." in session list on enrolment webpage?',
+'type'=>'select_yesno_switchy',
+'default_value'=>'y'
+);
+
+$system__options_general[]=array(
 'option_name'=>'include_weekday_in_session_name',
 'option_text'=>'Include weekday in session date whereever displayed?',
 'type'=>'select_yesno_switchy',
@@ -572,15 +586,6 @@ $system__options_general[]=array(
 'type'=>'select_yesno_switchy',
 'default_value'=>'n',
 'include_none_option'=>'y'
-);
-
-$system__options_general[]=array(
-'option_name'=>'subject_cancellation_hours_before_start',
-'option_text'=>'If yes: Allow cancellation until how many hours before session start?',
-'type'=>'textline',
-'default_value'=>'6',
-'size'=>'3',
-'maxlength'=>'3',
 );
 
 $system__options_general[]=array(
@@ -1134,7 +1139,6 @@ $system__options_defaults[]=array(
 'maxlength'=>'3',
 );
 
-
 $system__options_defaults[]=array(
 'option_name'=>'session_registration_end_hours_default',
 'option_text'=>'Experiment Session: registration end: default hours before session?',
@@ -1143,6 +1147,38 @@ $system__options_defaults[]=array(
 'value_begin'=>'0',
 'value_end'=>'func:$options["session_registration_end_hours_max"]',
 'value_step'=>'func:$options["session_registration_end_hours_steps"]',
+'values_reverse'=>'n',
+'include_none_option'=>'n'
+);
+
+$system__options_defaults[]=array('type'=>'line');
+
+$system__options_defaults[]=array(
+'option_name'=>'session_cancellation_end_hours_max',
+'option_text'=>'Experiment Session: cancellation end: max hours before session?',
+'type'=>'textline',
+'default_value'=>'240',
+'size'=>'3',
+'maxlength'=>'3',
+);
+
+$system__options_defaults[]=array(
+'option_name'=>'session_cancellation_end_hours_steps',
+'option_text'=>'Experiment Session: cancellation end: steps for hours before session?',
+'type'=>'textline',
+'default_value'=>'12',
+'size'=>'3',
+'maxlength'=>'3',
+);
+
+$system__options_defaults[]=array(
+'option_name'=>'session_cancellation_end_hours_default',
+'option_text'=>'Experiment Session: cancellation end: default hours before session?',
+'type'=>'select_numbers',
+'default_value'=>'24',
+'value_begin'=>'0',
+'value_end'=>'func:$options["session_cancellation_end_hours_max"]',
+'value_step'=>'func:$options["session_cancellation_end_hours_steps"]',
 'values_reverse'=>'n',
 'include_none_option'=>'n'
 );

@@ -42,7 +42,8 @@ pesa_add_new_options.sql
 pesa_add_new_lang_symbols.sql
 pesa_add_new_public_content.sql
 pesa_extend_admin.sql
-pesa_update_error_message.sql)
+pesa_update_error_message.sql
+pesa_remove_options.sql)
 
 # transfering or_admin, this requires a .htaccess file
 cat ./pesa_transfer_admin.sh | sed "s/##new_db##/$new_db/g" | sed "s/##old_db##/$old_db/g" | bash
