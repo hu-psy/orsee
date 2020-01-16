@@ -28,6 +28,38 @@ if ($proceed) {
         $bulk=$_REQUEST;
         $continue=true;
 
+        // check for empty parts
+        $non_empty_subject = array();
+        $empty_subject = array();
+        $non_empty_body = array();
+        $empty_body = array();
+        foreach ($inv_langs as $inv_lang) {
+            if(empty($bulk[$inv_lang.'_subject'])) {
+                $empty_subject[] = $inv_lang;
+            } else {
+                $non_empty_subject[] = $inv_lang;
+            }
+
+            if(empty($bulk[$inv_lang.'_body'])) {
+                $empty_body[] = $inv_lang;
+            } else {
+                $non_empty_body[] = $inv_lang;
+            }
+        }
+
+        // fill empty parts with text from other languages
+        if(!empty($non_empty_subject)) {
+            foreach ($empty_subject as $s){
+                $bulk[$s.'_subject'] = $bulk[$non_empty_subject[0].'_subject'];
+            }
+        }
+
+        if(!empty($non_empty_body)) {
+            foreach ($empty_body as $b){
+                $bulk[$b.'_body'] = $bulk[$non_empty_body[0].'_body'];
+            }
+        }
+        
         foreach ($inv_langs as $inv_lang) {
              if (!$bulk[$inv_lang.'_subject']) {
                 message (lang('subject').': '.lang('missing_language').": ".$inv_lang);
