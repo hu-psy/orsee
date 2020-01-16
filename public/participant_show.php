@@ -109,11 +109,29 @@ if ($proceed) {
                     <INPUT type=hidden name="s" value="'.$_REQUEST['s'].'">';
 
                 if ($token_string) echo '<INPUT type=hidden name="p" value="'.$participant['participant_id_crypt'].'">';
+
+                $email = experimentmail__load_invitation_text($session['experiment_id'], $participant['language']);
+                $subject = stripslashes(str_replace(strstr($email,"\n"), "", $email));
+                $criteria = substr(strrchr($subject,":"), 1);
+
                 echo '<INPUT type=hidden name="register" value="true">
                     <TABLE class="or_formtable">
                     <TR>
                         <TD colspan=2 align=center>
                             <B>'.lang('do_you_really_want_to_register_for_experiment').'</B>
+                        </TD>
+                    </TR>
+                    <TR>
+                        <TD colspan=2 align=center>
+                            <B>'.lang('check_suitability').'</B>
+                        </TD>
+                    </TR>
+                    <TR>
+                        <TD>
+                            '.lang('criteria').':
+                        </TD>
+                        <TD>
+                            '.$criteria.'
                         </TD>
                     </TR>
                     <TR>
