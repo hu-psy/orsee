@@ -35,7 +35,8 @@ function cron__run_cronjobs() {
         'check_for_participant_exclusion',
         'send_participant_statistics',
         'send_experiment_calendar',
-        'run_webalizer');
+        'run_webalizer',
+        'auto_exclusion_inactive_participants');
 
     $query="SELECT * from ".table('cron_jobs')." WHERE enabled='y'";
     $result=or_query($query);
@@ -479,4 +480,48 @@ function cron__check_for_participant_exclusion() {
     return $mess;
 }
 
+
+function cron__auto_exclusion_inactive_participants(){
+    // 1. determine participants for warnings
+    $participants_table = table('participants');
+    $now = time();
+    $objection_period = 30 * 24 * 60 * 60;
+    $exclusion_limit = $now - 1.5 * 12 * 30 * 24 * 60 * 60;
+    $warning_limit = $exclusion_limit + $objection_period;
+    $warning_limit_in_db_format = date("YmdHi", $warning_limit); // transfere seconds since epoche to YYYYMMDDhhmm (time format in or_sessions)
+
+    $query="select * from {$participants_table}
+            where (last_activity <= {$warning_limit}
+                   or last_activity is null)
+                  and participant_id not in (
+                      select participant_id
+                      from or_participate_at as a
+                      join or_sessions as b
+                      on a.session_id = b.session_id
+                      group by participant_id
+                      having max(session_start) > {$warning_limit_in_db_format}
+                  )";
+
+    $result=or_query($query);
+
+    $participants_to_be_warned = array();
+    $participants_to_be_deleted = array();
+    while ($line=pdo_fetch_assoc($result)) {
+        if(is_null($line["warning_sent_on"])){
+            $participants_to_be_warned[] = $line['participant_id'];
+        } elseif($now - $objection_period > $line[$warning_sent]) {
+            $participants_to_be_deleted[] = $line['participant_id'];
+        }
+    }
+
+    $participants = implode(", ", $participants_to_be_warned); 
+    $query = "update {$participants_table} set warning_sent_on=now() where participant_id in ({$participants})";
+    $result=or_query($query);
+
+    $participants = implode(", ", $participants_to_be_deleted); 
+    $query = "update {$participants_table} set status_id=2 where participant_id in ({$participants})";
+    $result=or_query($query);
+    
+    return "warned: " . sizeof($participants_to_be_warned) . "\ndeleted: " . sizeof($participants_to_be_deleted);
+}
 ?>
