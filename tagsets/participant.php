@@ -1021,6 +1021,7 @@ function participant__check_login($email,$password) {
         $_SESSION['pauthdata']['participant_id']=$participant['participant_id'];
         $done=participant__track_successful_login($participant);
         participant__update_last_activity_time($participant['participant_id']);
+        participant__reset_warning_sent_on($participant['participant_id']);
         return true;
     } else {
         if (isset($locked) && $locked) message(lang('error_locked_out'));
@@ -1156,6 +1157,24 @@ function participant__update_last_activity_time($participant_id, $time=NULL ) {
         $condition="participant_id= :participant_id";
     }
     $query="UPDATE ".table('participants')." SET last_activity=:time WHERE {$condition}";
+    $done=or_query($query,$pars);
+}
+
+function participant__reset_warning_sent_on($participant_id) {
+    if (is_array($participant_id)) {
+        $i=0; $parnames=array();
+        foreach ($participant_id as $pid) {
+            $i++;
+            $tparname=':participant_id_'.$i;
+            $parnames[]=$tparname;
+            $pars[$tparname]=$pid;
+        }
+        $condition="participant_id IN (".implode(",",$parnames).")";
+    } else {
+        $pars[':participant_id']=$participant_id;
+        $condition="participant_id= :participant_id";
+    }
+    $query="UPDATE ".table('participants')." SET warning_sent_on=null WHERE {$condition}";
     $done=or_query($query,$pars);
 }
 
