@@ -509,6 +509,9 @@ function cron__auto_exclusion_inactive_participants(){
     while ($line=pdo_fetch_assoc($result)) {
         if(is_null($line["warning_sent_on"])){
             $participants_to_be_warned[] = $line['participant_id'];
+            $mail_queue_table = table('mail_queue');
+            $query = "insert into {$mail_queue_table} (timestamp, mail_type, mail_recipient) values ({$now}, 'inactivity_warning', {$line['participant_id']})";
+            or_query($query);
         } elseif($now - $objection_period > strtotime($line['warning_sent_on'])) {
             $participants_to_be_deleted[] = $line['participant_id'];
         }

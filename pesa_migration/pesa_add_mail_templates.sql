@@ -60,3 +60,30 @@ Mit freundlichen Gruessen
 PESA2019
 '
 from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang (lang_id, enabled, order_number, content_type, content_name, en, de) 
+select max(lang_id)+1 ,'y', -1, 'mail', 'public_inactivity_warning', 
+'Hello!
+
+Your account seems to be inactive since #last_activity#.
+If you are stil interested in participating experiments, please log into your PESA account.
+Otherwise your account will be deleted in one month.
+
+Regards,
+
+PESA2019',
+'Hallo!
+
+Ihr Account scheint seit dem #last_activity# inaktiv zu sein.
+Wenn Sie weiterhin an der Teilnahme an Experimenten interessiert sind, loggen Sie sich bitte in PESA ein.
+Andernfalls wird Ihr Konto in einem Monat gelöscht.
+
+Mit freundlichen Gruessen
+
+PESA2019
+'
+from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang (lang_id, enabled, order_number, content_type, content_name, en, de) 
+select max(lang_id)+1 ,'y', -1, 'lang', 'email_inactivity_warning_subject', 'PESA is missing you!', 'PESA vermisst dich!'
+from ##new_db##.or_lang;
