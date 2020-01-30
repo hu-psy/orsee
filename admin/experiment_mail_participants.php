@@ -49,6 +49,38 @@ if ($proceed) {
         $sitem['content_type']='experiment_invitation_mail';
         $sitem['content_name']=$experiment_id;
 
+        // check for empty parts
+        $non_empty_subject = array();
+        $empty_subject = array();
+        $non_empty_body = array();
+        $empty_body = array();
+        foreach ($inv_langs as $inv_lang) {
+            if(empty($sitem[$inv_lang.'_subject'])) {
+                $empty_subject[] = $inv_lang;
+            } else {
+                $non_empty_subject[] = $inv_lang;
+            }
+
+            if(empty($sitem[$inv_lang.'_body'])) {
+                $empty_body[] = $inv_lang;
+            } else {
+                $non_empty_body[] = $inv_lang;
+            }
+        }
+
+        // fill empty parts with text from other languages
+        if(!empty($non_empty_subject)) {
+            foreach ($empty_subject as $s){
+                $sitem[$s.'_subject'] = $sitem[$non_empty_subject[0].'_subject'];
+            }
+        }
+
+        if(!empty($non_empty_body)) {
+            foreach ($empty_body as $b){
+                $sitem[$b.'_body'] = $sitem[$non_empty_body[0].'_body'];
+            }
+        }
+
         // prepare lang stuff
         foreach ($inv_langs as $inv_lang) {
             $sitem[$inv_lang]=$sitem[$inv_lang.'_subject']."\n".$sitem[$inv_lang.'_body'];
@@ -66,8 +98,16 @@ if ($proceed) {
         if ($done) message (lang('changes_saved'));
         else message (lang('database_error'));
 
-        if ($preview) {
+        if ($save) {
+            message(lang('mail_text_saved'));
+            log__admin("experiment_edit_invitation_mail","experiment:".$experiment['experiment_name']);
+            redirect ('admin/'.thisdoc().'?experiment_id='.$experiment_id);
+        } elseif($preview) {
             redirect ('admin/experiment_mail_preview.php?experiment_id='.$experiment_id);
+        } elseif(empty($non_empty_subject) or empty($non_empty_body)){
+            // allow sending of emails only if at least one subject and one message body are provided
+            message(lang('error_empty_mail_parts'));
+            redirect ('admin/'.thisdoc().'?experiment_id='.$experiment_id);
         } elseif ($send || $sendall) {
             // send mails!
 
@@ -83,11 +123,6 @@ if ($proceed) {
                 log__admin("experiment_send_invitations","experiment:".$experiment['experiment_name']);
                 redirect ("admin/experiment_mail_participants.php?experiment_id=".$experiment_id);
             }
-
-        } else {
-            message(lang('mail_text_saved'));
-            log__admin("experiment_edit_invitation_mail","experiment:".$experiment['experiment_name']);
-            redirect ('admin/'.thisdoc().'?experiment_id='.$experiment_id);
         }
     }
 }
@@ -119,7 +154,7 @@ if ($proceed) {
 
         // set defaults if not existent
         if (!$subject) {
-            $subject=load_language_symbol('def_expmail_subject',$inv_lang);
+            $subject="";
         }
 
         if (!$body) {
@@ -139,11 +174,10 @@ if ($proceed) {
         echo '
             <TR>
                 <TD>
-                    '.lang('subject').':
+                    '.lang('subject').': '.load_language_symbol('def_expmail_subject_example',$inv_lang). '
                 </TD>
                 <TD>
-                    <INPUT type=text name="'.$inv_lang.'_subject" size=30 maxlength=80 value="'.
-                        stripslashes($subject).'">
+                    <INPUT type=text name="'.$inv_lang.'_subject" size=30 maxlength=80 value="'.stripslashes($subject).'">
                 </TD>
             </TR>
                     <TR>

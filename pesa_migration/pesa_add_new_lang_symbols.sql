@@ -44,6 +44,24 @@ insert into ##new_db##.or_lang
 select max(lang_id)+1 ,'y', -1, 'lang', 'you_have_to_year_of_birth', 'Please enter your year of birth.', 'Bitte geben Sie Ihr Geburtsjahr an.' from ##new_db##.or_lang;
 
 insert into ##new_db##.or_lang
+select max(lang_id)+1 ,'y', -1, 'lang', 'criteria', 'Criteria', 'Kriterien' from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang
+select max(lang_id)+1 ,'y', -1, 'lang', 'check_suitability', 'Please check if you are really eligible for this experiment.', 'Bitte überprüfen Sie, ob Sie wirklich für das Experiment geeignet sind.' from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang
+select max(lang_id)+1 ,'y', -1, 'lang', 'def_expmail_subject_example', 'e.g. "Participants wanted: born after 2000, right-handed"', 'z.B. "Teilnehmer gesucht: nach 2000 geboren, Rechtshänder"' from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang
+select max(lang_id)+1 ,'y', -1, 'lang', 'error_empty_mail_parts', 'Error: please provide at least one subject and message body for at least one language.', 'Fehler: Bitte geben Sie mindestens einen Betreff und Nachrichtentext in mindestens einer Sprache an.' from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang
+select max(lang_id)+1 ,'y', -1, 'lang', 'cancellation_end_hours_before', 'Cancellation deadline (hours before session start)', 'Abmeldungsende (Stunden vor Sessionbeginn)' from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang
+select max(lang_id)+1 ,'y', -1, 'lang', 'cancellation_until', 'cancel until', 'Abmeldung bis' from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang
 select max(lang_id)+1 ,'y', -1, 'lang', 'query_experimenters_by_group', 'Prior participation - experimenter by group', 'Vorherige Teilnahme - Experimentator (gruppiert nach Gruppen)' from ##new_db##.or_lang;
 
 insert into ##new_db##.or_lang
