@@ -100,3 +100,12 @@ Mit freundlichen Gruessen,
 PESA2019
 '
 from ##new_db##.or_lang;
+
+
+insert into ##new_db##.or_lang (lang_id, enabled, order_number, content_type, content_name, en, de)
+select max(lang_id)+1 ,'y', -1, 'lang', 'email_admin_expiration_subject', 'Your PESA account has been expired', 'Ihr PESA Account ist abgelaufen'
+from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang (lang_id, enabled, order_number, content_type, content_name, en, de)
+select max(lang_id)+1 ,'y', -1, 'lang', 'email_admin_expiration_warning_subject', 'Your PESA account will expire soon', 'Ihr PESA Account läuft demnächst ab'
+from ##new_db##.or_lang;
