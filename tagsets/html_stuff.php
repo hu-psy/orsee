@@ -367,6 +367,7 @@ $menu[]=
                             'show_if_logged_in'=>1
                             );
 
+# hide Statistics entry in menu if not installer or admin
 if ($expadmindata['admin_type'] == 'installer'
     or $expadmindata['admin_type'] == 'admin') {
         $menu[] = array('menu_area'=>'statistics',
