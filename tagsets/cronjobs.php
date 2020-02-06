@@ -483,7 +483,7 @@ function cron__check_for_participant_exclusion() {
 
 function cron__check_for_expired_experimenter_accounts(){
     // 1. determine participants for warnings
-    $admin_table = table('admins');
+    $admin_table = table('admin');
     $now = time();
     $objection_period = 30; // [days]
     $query="select admin_id, expiration_warning_sent, datediff(expiration_date, curdate()) as time_til_expiration
@@ -529,10 +529,10 @@ function cron__check_for_expired_experimenter_accounts(){
                 email = NULL,
                 admin_type = NULL,
                 password_crypt = NULL,
-                experimenter_list = y,
+                experimenter_list = 'y',
                 language = NULL,
-                get_calendar_mail = y,
-                get_statistics_mail = y,
+                get_calendar_mail = 'y',
+                get_statistics_mail = 'y',
                 last_login_attempt = NULL,
                 failed_login_attempts = 0,
                 locked = 0,
