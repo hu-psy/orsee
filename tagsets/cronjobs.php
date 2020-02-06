@@ -507,6 +507,7 @@ function cron__check_for_expired_experimenter_accounts(){
             $admin_to_be_warned[] = $line['admin_id'];
             $mail_queue_table = table('mail_queue');
             $query = "insert into {$mail_queue_table} (timestamp, mail_type, mail_recipient) values ({$now}, 'admin_account_warning', {$line['admin_id']})";
+            or_query($query);
         }
     }
 
