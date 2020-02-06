@@ -13,7 +13,7 @@ if ($proceed) {
     if ($admin_id) $admin=orsee_db_load_array("admin",$admin_id,"admin_id"); else {
         $admin=array('adminname'=>'','fname'=>'','lname'=>'','email'=>'','admin_type'=>'','language'=>'',
                 'experimenter_list'=>'','get_calendar_mail'=>'','get_statistics_mail'=>'','disabled'=>'n',
-                'locked'=>0,'last_login_attempt'=>0,'failed_login_attempts'=>0,'pw_update_requested'=>0);
+                'locked'=>0,'last_login_attempt'=>0,'failed_login_attempts'=>0,'pw_update_requested'=>0, 'expiration_date'=>'');
     }
 
     if ((!$admin_id) ||  $admin_id!=$expadmindata['admin_id'])
@@ -46,6 +46,11 @@ if ($proceed) {
 
         if (!$_REQUEST['email']) {
             message(lang('you_have_to_give_email_address'));
+            $continue=false;
+        }
+
+        if (!$_REQUEST['expiration_date']) {
+            message(lang('you_have_to_give_an_expiration_date'));
             $continue=false;
         }
 
@@ -349,6 +354,16 @@ if ($proceed) {
                 <td>&nbsp;&nbsp;</td>
                 <td>
                     <input name="password2" type="password" size="10" maxlength="20" value="">
+                </td>
+            </tr>
+
+            <tr>
+                <td align=right>
+                    '.lang('expiration_date').':
+                </td>
+                <td>&nbsp;&nbsp;</td>
+                <td>
+                    <input name="expiration_date" type="date" value="' . $admin['expiration_date']. '">
                 </td>
             </tr>';
             }
