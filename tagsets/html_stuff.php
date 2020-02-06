@@ -181,7 +181,7 @@ function html__show_style_header($area='public',$title="") {
                 ortime__format($now,'hide_time:true,hide_year:true',$expadmindata['language']).'</FONT><BR>'.
                 lang('time').': <FONT color="'.$color['menu_item'].'">'.
                 ortime__format($now,'hide_date:true',$expadmindata['language']).'</FONT>';
-            $menu=html__get_admin_menu();
+            $menu=html__get_admin_menu($expadmindata);
         } else {
             $current_user_data_box="";
             if((isset($_SESSION['pauthdata']['user_logged_in']) && $_SESSION['pauthdata']['user_logged_in'])
@@ -225,7 +225,7 @@ function html__show_style_footer($area='public') {
 
 
 
-function html__get_admin_menu() {
+function html__get_admin_menu($expadmindata = NULL) {
     global $settings;
     $menu=array();
     $menu[]=    array(
@@ -366,16 +366,18 @@ $menu[]=
                             'show_if_not_logged_in'=>0,
                             'show_if_logged_in'=>1
                             );
-$menu[]=
-                    array(
-                            'menu_area'=>'statistics',
-                            'entrytype'=>'headlink',
-                            'lang_item'=>'statistics',
-                            'link'=>'/admin/statistics_main.php',
-                            'icon'=>'bar-chart-o',
-                            'show_if_not_logged_in'=>0,
-                            'show_if_logged_in'=>1
-                            );
+
+if ($expadmindata['admin_type'] == 'installer'
+    or $expadmindata['admin_type'] == 'admin') {
+        $menu[] = array('menu_area'=>'statistics',
+                        'entrytype'=>'headlink',
+                        'lang_item'=>'statistics',
+                        'link'=>'/admin/statistics_main.php',
+                        'icon'=>'bar-chart-o',
+                        'show_if_not_logged_in'=>0,
+                        'show_if_logged_in'=>1);
+}
+
 $menu[]=                    array(
                             'menu_area'=>'logout',
                             'entrytype'=>'headlink',
