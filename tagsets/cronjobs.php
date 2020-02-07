@@ -485,7 +485,7 @@ function cron__delete_old_experiments(){
     $exp_tbl = table('experiments');
     $ses_tbl = table('sessions');
     $part_tbl = table('participate_at');
-    $query="select {$exp_tbl}.experiment_id, max({$ses_tbl}.session_start)
+    $query="select {$exp_tbl}.experiment_id, max({$ses_tbl}.session_start) as session_start
             from {$exp_tbl}
             inner join {$ses_tbl}
             on {$exp_tbl}.experiment_id = {$ses_tbl}.experiment_id
