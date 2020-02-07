@@ -448,7 +448,7 @@ function cron__check_for_finished_experiments(){
     while ($line=pdo_fetch_assoc($result)) {
         // if the last session start time is more than 4 weeks ago the experiment is considered to be finished
         $session_start = ortime__sesstime_to_unixtime($line['session_start']);
-        if ($session_end + $four_weeks < $now) {
+        if ($session_start + $four_weeks < $now) {
             $query = "update {$exp_tbl} set experiment_finished = 'y' where experiment_id = '{$line['experiment_id']}'";
             $done = or_query($query);
             $number++;
