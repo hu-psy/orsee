@@ -35,7 +35,8 @@ function cron__run_cronjobs() {
         'check_for_participant_exclusion',
         'send_participant_statistics',
         'send_experiment_calendar',
-        'run_webalizer');
+        'run_webalizer',
+        'delete_old_experiments');
 
     $query="SELECT * from ".table('cron_jobs')." WHERE enabled='y'";
     $result=or_query($query);
@@ -479,4 +480,49 @@ function cron__check_for_participant_exclusion() {
     return $mess;
 }
 
+function cron__delete_old_experiments(){
+    // get experiments which are finished and their last session
+    $exp_tbl = table('experiments');
+    $ses_tbl = table('sessions');
+    $part_tbl = table('participate_at');
+    $query="select {$exp_tbl}.experiment_id, max({$ses_tbl}.session_start)
+            from {$exp_tbl}
+            inner join {$ses_tbl}
+            on {$exp_tbl}.experiment_id = {$ses_tbl}.experiment_id
+            where {$exp_tbl}.experiment_finished = 'y'
+            group by {$exp_tbl}.experiment_id";
+    $result=or_query($query);
+
+    $now=time();
+    $number = 0;
+    $three_years = 3 * 365 * 24 * 60 * 60;
+    while ($line=pdo_fetch_assoc($result)) {
+        // if the last session start time is more than 3 years ago delete the experiment
+        $session_start = ortime__sesstime_to_unixtime($line['session_start']);
+        if ($session_start + $three_years < $now) {
+            $query = "delete from {$exp_tbl} where experiment_id = '{$line['experiment_id']}'";
+            $done = or_query($query);
+            $query = "delete from {$ses_tbl} where experiment_id = '{$line['experiment_id']}'";
+            $done = or_query($query);
+            $query = "delete from {$part_tbl} where experiment_id = '{$line['experiment_id']}'";
+            $done = or_query($query);
+            $number++;
+        }
+    }
+
+    // get all too old and finished online experiments
+    $online_exp_tbl = table('online_experiments');
+    $query = "select experiment_id from {$online_exp_tbl} where datediff(now(), end) >= 3*365";
+    $done = or_query($query);
+
+    while ($line=pdo_fetch_assoc($result)) {
+        $query = "delete from {$exp_tbl} where experiment_id = '{$line['experiment_id']}'";
+        $done = or_query($query);
+        $query = "delete from {$online_exp_tbl} where experiment_id = '{$line['experiment_id']}'";
+        $done = or_query($query);
+        $number++;
+    }
+
+    return $number . " experiments deleted";
+}
 ?>
