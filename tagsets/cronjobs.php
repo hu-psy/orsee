@@ -523,7 +523,37 @@ function cron__auto_exclusion_inactive_participants(){
     $result=or_query($query);
 
     $participants = implode(", ", $participants_to_be_deleted); 
-    $query = "update {$participants_table} set status_id=2 where participant_id in ({$participants})";
+    $query = "update {$participants_table}
+              set participant_id_crypt = NULL,
+                  password_crypted = NULL,
+                  confirmation_token = NULL,
+                  pwreset_token = NULL,
+                  pwreset_request_time = NULL,
+                  last_login_attempt = NULL,
+                  failed_login_attempts = NULL,
+                  locked = NULL,
+                  creation_time = NULL,
+                  deletion_time = NULL,
+                  subpool_id = 1,
+                  subscriptions = NULL,
+                  rules_signed = NULL,
+                  status_id = 2,
+                  number_reg = NULL,
+                  number_noshowup = NULL,
+                  last_enrolment = NULL,
+                  last_profile_update = NULL,
+                  last_activity = NULL,
+                  pending_profile_update_request = NULL,
+                  profile_update_request_new_pool = NULL,
+                  apply_permanent_queries = NULL,
+                  remarks = NULL,
+                  language = NULL,
+                  email = NULL,
+                  gender = NULL,
+                  year_of_birth = 9999,
+                  warning_sent_on = NULL
+              where participant_id in ({$participants})";
+
     $result=or_query($query);
     
     return "warned: " . sizeof($participants_to_be_warned) . "\ndeleted: " . sizeof($participants_to_be_deleted);
