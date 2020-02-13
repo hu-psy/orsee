@@ -33,3 +33,7 @@ from ##new_db##.or_options;
 insert into ##new_db##.or_options (option_id, option_type, option_name, option_value) 
 select max(option_id)+1 ,'general', 'maximum_assignments', '400'
 from ##new_db##.or_options;
+
+insert into ##new_db##.or_options (option_id, option_type, option_name, option_value) 
+select max(option_id)+1 ,'general', 'delete_finished_experiments_after', '1095'
+from ##new_db##.or_options;

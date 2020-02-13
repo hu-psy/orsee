@@ -481,6 +481,8 @@ function cron__check_for_participant_exclusion() {
 }
 
 function cron__delete_old_experiments(){
+    global $settings;
+
     // get experiments which are finished and their last session
     $exp_tbl = table('experiments');
     $ses_tbl = table('sessions');
@@ -495,11 +497,11 @@ function cron__delete_old_experiments(){
 
     $now=time();
     $number = 0;
-    $three_years = 3 * 365 * 24 * 60 * 60;
+    $years = $settings['delete_finished_experiments_after'] * 24 * 60 * 60;
     while ($line=pdo_fetch_assoc($result)) {
         // if the last session start time is more than 3 years ago delete the experiment
         $session_start = ortime__sesstime_to_unixtime($line['session_start']);
-        if ($session_start + $three_years < $now) {
+        if ($session_start + $years < $now) {
             $query = "delete from {$exp_tbl} where experiment_id = '{$line['experiment_id']}'";
             $done = or_query($query);
             $query = "delete from {$ses_tbl} where experiment_id = '{$line['experiment_id']}'";
