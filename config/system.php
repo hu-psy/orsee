@@ -1,4 +1,4 @@
-<?php
+    <?php
 // part of orsee. see orsee.org
 // THIS FILE WILL CHANGE FROM VERSION TO VERSION. BETTER NOT EDIT.
 $system__version="3.0.5";
@@ -645,6 +645,28 @@ $system__options_general[]=array(
 );
 
 
+$system__options_general[]=array('type'=>'line');
+
+$system__options_general[]=array('type'=>'comment',
+                                 'text'=>'Automated Experiment Management Settings');
+
+$system__options_general[]=array(
+                                 'option_name'=>'delete_finished_experiments_after',
+                                 'option_text'=>'Delete finished experiments which are older than x days',
+                                 'type'=>'textline',
+                                 'default_value'=>'1095',
+                                 'size'=>'4',
+                                 'maxlength'=>'5',
+                                );
+
+$system__options_general[]=array(
+                                 'option_name'=>'finished_experiment_limit',
+                                 'option_text'=>'Set experiment to finished if last session started x days ago',
+                                 'type'=>'textline',
+                                 'default_value'=>'28',
+                                 'size'=>'2',
+                                 'maxlength'=>'3',
+                                );
 
 $system__options_general[]=array('type'=>'line');
 

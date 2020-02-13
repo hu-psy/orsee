@@ -36,6 +36,7 @@ function cron__run_cronjobs() {
         'send_participant_statistics',
         'send_experiment_calendar',
         'run_webalizer',
+        'delete_old_experiments',
         'check_for_expired_experimenter_accounts');
 
     $query="SELECT * from ".table('cron_jobs')." WHERE enabled='y'";
@@ -432,10 +433,11 @@ function cron__check_for_finished_sessions(){
 }
 
 function cron__check_for_finished_experiments(){
+    global $settings;
     // get experiments which arn't finished and their last session
     $exp_tbl = table('experiments');
     $ses_tbl = table('sessions');
-    $query="select {$exp_tbl}.experiment_id, max({$ses_tbl}.session_start)
+    $query="select {$exp_tbl}.experiment_id, max({$ses_tbl}.session_start) as session_start
             from {$exp_tbl}
             inner join {$ses_tbl}
             on {$exp_tbl}.experiment_id = {$ses_tbl}.experiment_id
@@ -445,11 +447,11 @@ function cron__check_for_finished_experiments(){
 
     $now=time();
     $number = 0;
-    $four_weeks = 4 * 7 * 24 * 60 * 60;
+    $weeks = $settings['finished_experiment_limit'] * 24 * 60 * 60;
     while ($line=pdo_fetch_assoc($result)) {
         // if the last session start time is more than 4 weeks ago the experiment is considered to be finished
         $session_start = ortime__sesstime_to_unixtime($line['session_start']);
-        if ($session_end + $four_weeks < $now) {
+        if ($session_start + $weeks < $now) {
             $query = "update {$exp_tbl} set experiment_finished = 'y' where experiment_id = '{$line['experiment_id']}'";
             $done = or_query($query);
             $number++;
@@ -480,6 +482,59 @@ function cron__check_for_participant_exclusion() {
     return $mess;
 }
 
+
+function cron__delete_old_experiments(){
+    global $settings;
+
+    // get experiments which are finished and their last session
+    $exp_tbl = table('experiments');
+    $ses_tbl = table('sessions');
+    $part_tbl = table('participate_at');
+    $query="select {$exp_tbl}.experiment_id, max({$ses_tbl}.session_start) as session_start
+            from {$exp_tbl}
+            inner join {$ses_tbl}
+            on {$exp_tbl}.experiment_id = {$ses_tbl}.experiment_id
+            where {$exp_tbl}.experiment_finished = 'y'
+            group by {$exp_tbl}.experiment_id";
+    $result=or_query($query);
+
+    $now=time();
+    $number = 0;
+    $years = $settings['delete_finished_experiments_after'] * 24 * 60 * 60;
+    while ($line=pdo_fetch_assoc($result)) {
+        // if the last session start time is more than 3 years ago delete the experiment
+        $session_start = ortime__sesstime_to_unixtime($line['session_start']);
+        if ($session_start + $years < $now) {
+            $query = "delete from {$exp_tbl} where experiment_id = '{$line['experiment_id']}'";
+            $done = or_query($query);
+            $query = "delete from {$ses_tbl} where experiment_id = '{$line['experiment_id']}'";
+            $done = or_query($query);
+            $query = "delete from {$part_tbl} where experiment_id = '{$line['experiment_id']}'";
+            $done = or_query($query);
+            $number++;
+        }
+    }
+
+    // get all too old and finished online experiments
+    $online_exp_tbl = table('online_experiments');
+    $query = "select {$online_exp_tbl}.experiment_id
+              from {$online_exp_tbl}
+              inner join {$exp_tbl}
+              on {$online_exp_tbl}.experiment_id = {$exp_tbl}.experiment_id
+              where datediff(now(), end) >= {$settings['delete_finished_experiments_after']}
+                    and experiment_finished = 'y'";
+    $result = or_query($query);
+
+    while ($line=pdo_fetch_assoc($result)) {
+        $query = "delete from {$exp_tbl} where experiment_id = '{$line['experiment_id']}'";
+        $done = or_query($query);
+        $query = "delete from {$online_exp_tbl} where experiment_id = '{$line['experiment_id']}'";
+        $done = or_query($query);
+        $number++;
+    }
+
+    return $number . " experiments deleted";
+}
 
 function cron__check_for_expired_experimenter_accounts(){
     global $settings;

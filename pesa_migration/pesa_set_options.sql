@@ -11,6 +11,8 @@ update ##new_db##.or_options set option_value = 0   where (option_id = '14260121
 update ##new_db##.or_options set option_value = 1   where (option_id = '1426012098'); /* set participant default */
 update ##new_db##.or_options set option_value = 24  where (option_id = '1426012107'); /* set default registration end in hours before session start */
 update ##new_db##.or_options set option_value = 'y' where (option_id = '1426010284'); /* enable registration deadline in emails */
+update ##new_db##.or_options set option_value = 'n' where (option_id = '1426010279'); /* don't show public calendar */
+update ##new_db##.or_options set option_value = 'n' where (option_id = '1427378727'); /* disable email module for receiving and sending emails with a small imap/pop3-client integrated in orsee which supports orsee specific, ticket-like workflows */
 /* update pesa2019.or_options set option_value = '<insert-email-here>' where (option_id = '1426010269'); /* support mail */
 
 update ##new_db##.or_options set option_value = 'y' where option_id='1426010300'; /* enable noshow warnings */
