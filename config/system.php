@@ -754,8 +754,28 @@ $system__options_general[]=array(
 );
 
 $system__options_general[]=array('type'=>'line');
+$system__options_general[]=array('type'=>'comment',
+                                 'text'=>'Auto Account Expiration Settings');
 
+$system__options_general[]=array(
+                               'option_name'=>'admin_delete_expired_account_limit',
+                               'option_text'=>'Max. number of days after that an expired experimenter account will be deleted',
+                               'type'=>'textline',
+                               'default_value'=>'365',
+                               'size'=>'4',
+                               'maxlength'=>'3',
+                           );
 
+$system__options_general[]=array(
+                               'option_name'=>'admin_expiration_objection_period',
+                               'option_text'=>'Send a warning x days before an experimenter account will expire',
+                               'type'=>'textline',
+                               'default_value'=>'30',
+                               'size'=>'3',
+                               'maxlength'=>'2',
+                           );
+
+$system__options_general[]=array('type'=>'line');
 $system__options_general[]=array('type'=>'comment',
             'text'=>'Diverse settings');
 
