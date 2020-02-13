@@ -500,7 +500,8 @@ function cron__auto_exclusion_inactive_participants(){
                       on a.session_id = b.session_id
                       group by participant_id
                       having max(session_start) > {$warning_limit_in_db_format}
-                  )";
+                  )
+                  and status_id = 1";
 
     $result=or_query($query);
 
