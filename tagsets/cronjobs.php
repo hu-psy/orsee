@@ -514,8 +514,13 @@ function cron__delete_old_experiments(){
 
     // get all too old and finished online experiments
     $online_exp_tbl = table('online_experiments');
-    $query = "select experiment_id from {$online_exp_tbl} where datediff(now(), end) >= 3*365";
-    $done = or_query($query);
+    $query = "select {$online_exp_tbl}.experiment_id
+              from {$online_exp_tbl}
+              inner join {$exp_tbl}
+              on {$online_exp_tbl}.experiment_id = {$exp_tbl}.experiment_id
+              where datediff(now(), end) >= {$settings['delete_finished_experiments_after']}
+                    and experiment_finished = 'y'";
+    $result = or_query($query);
 
     while ($line=pdo_fetch_assoc($result)) {
         $query = "delete from {$exp_tbl} where experiment_id = '{$line['experiment_id']}'";
