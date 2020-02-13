@@ -78,3 +78,9 @@ select max(lang_id)+1 ,'y', -1, 'lang', 'participants_have_participated_on_by_gr
 
 insert into ##new_db##.or_lang
 select max(lang_id)+1 ,'y', -1, 'lang', 'participants_have_participated_on_by_experimenter', 'subjects who have participated in one of the following experiments of the following experimenter', 'Teilnehmer, die an einem der folgenden Experimente des folgenden Experimentators teilgenommen haben' from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang
+select max(lang_id)+1 ,'y', -1, 'lang', 'expiration_date', 'expiration date', 'Ablaufdatum' from ##new_db##.or_lang;
+
+insert into ##new_db##.or_lang
+select max(lang_id)+1 ,'y', -1, 'lang', 'you_have_to_give_an_expiration_date', 'Please add a valid expiration date for this account.', 'Bitte geben Sie ein gültiges Ablaufdatum für diesen Account an.' from ##new_db##.or_lang;

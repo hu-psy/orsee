@@ -312,10 +312,10 @@ function experimentmail__send_mails_from_queue($number=0,$type="",$experiment_id
     } else $squery="";
 
     $smails=array(); $smails_ids=array();
-    $invitations=array(); $reminders=array(); $bulks=array(); $warnings=array(); $inactivity_warnings=array();
+    $invitations=array(); $reminders=array(); $bulks=array(); $warnings=array(); $admin_expiration_warnings=array(); $admin_expirations=array(); $inactivity_warnings=array();
     $errors=array();
     $reminder_text=array(); $warning_text=array(); $inv_texts=array();
-    $exps=array(); $sesss=array(); $parts=array(); $labs=array();
+    $exps=array(); $sesss=array(); $parts=array(); $admins=array(); $labs=array();
     $pform_fields=array();
     $slists=array();
 
@@ -357,7 +357,11 @@ function experimentmail__send_mails_from_queue($number=0,$type="",$experiment_id
             }
         }
         if (!isset($sesss[$tsess]) && $tsess) $sesss[$tsess]=orsee_db_load_array("sessions",$tsess,"session_id");
-        if (!isset($parts[$tpart]) && $tpart) $parts[$tpart]=orsee_db_load_array("participants",$tpart,"participant_id");
+        if ($ttype=="admin_expiration_warning" || $ttype=="admin_expiration" ) {
+            if (!isset($admins[$tpart]) && $tpart) $admins[$tpart]=orsee_db_load_array("admin",$tpart,"admin_id");
+        } else {
+            if (!isset($parts[$tpart]) && $tpart) $parts[$tpart]=orsee_db_load_array("participants",$tpart,"participant_id");
+        }
         $tlang=$parts[$tpart]['language'];
         if (!isset($footers[$tlang])) $footers[$tlang]=load_mail("public_mail_footer",$tlang);
         if ($ttype=="session_reminder" && !isset($reminder_text[$texp][$tlang])) {
@@ -374,6 +378,14 @@ function experimentmail__send_mails_from_queue($number=0,$type="",$experiment_id
             $warning_text[$tlang]['text']=load_mail("public_noshow_warning",$tlang);
             $warning_text[$tlang]['subject']=load_language_symbol('email_noshow_warning_subject',$tlang);
         }
+        if ($ttype=="admin_expiration" && !isset($admin_expirations[$tlang])) {
+            $expiration_text[$tlang]['text']=load_mail("admin_expiration",$tlang);
+            $expiration_text[$tlang]['subject']=load_language_symbol('email_admin_expiration_subject',$tlang);
+        }
+        if ($ttype=="admin_expiration_warning" && !isset($admin_expiration_warnings[$tlang])) {
+            $expiration_warning_text[$tlang]['text']=load_mail("admin_expiration_warning",$tlang);
+            $expiration_warning_text[$tlang]['subject']=load_language_symbol('email_admin_expiration_warning_subject',$tlang);
+        }
         if ($ttype=="inactivity_warning" && !isset($warning_text[$tlang])) {
             $inactivity_warning_text[$tlang]['text']=load_mail("public_inactivity_warning",$tlang);
             $inactivity_warning_text[$tlang]['subject']=load_language_symbol('email_inactivity_warning_subject',$tlang);
@@ -381,7 +393,6 @@ function experimentmail__send_mails_from_queue($number=0,$type="",$experiment_id
         if (($ttype=="session_reminder" || $ttype=="noshow_warning") && !isset($labs[$tsess][$tlang])) {
             $labs[$tsess][$tlang]=laboratories__get_laboratory_text($sesss[$tsess]['laboratory_id'],$tlang);
         }
-
 
         if ($ttype=="invitation" && !isset($inv_texts[$texp][$tlang]))
             $inv_texts[$texp][$tlang]=experimentmail__load_invitation_text($texp,$tlang);
@@ -435,6 +446,12 @@ function experimentmail__send_mails_from_queue($number=0,$type="",$experiment_id
                     break;
                 case "noshow_warning":
                     $warnings[]=$line;
+                    break;
+                case "admin_expiration":
+                    $admin_expirations[]=$line;
+                    break;
+                case "admin_expiration_warning":
+                    $admin_expiration_warnings[]=$line;
                     break;
                 case "inactivity_warning":
                     $inactivity_warnings[]=$line;
@@ -490,6 +507,41 @@ function experimentmail__send_mails_from_queue($number=0,$type="",$experiment_id
         $done=experimentmail__send_inactivity_warning_mail(
                   $parts[$mail['mail_recipient']],
                   $inactivity_warning_text[$tlang],
+                  $footers[$tlang]
+              );
+        if ($done) {
+            $mails_sent++;
+            $deleted=experimentmail__delete_from_queue($mail['mail_id']);
+        } else {
+            $mail['error']="sending";
+            $errors[]=$mail;
+        }
+    }
+
+    // admin expirations
+    foreach ($admin_expirations as $mail) {
+        $tlang=$admins[$mail['mail_recipient']]['language'];
+        # reuse following function because only the content of the 2. argument is changed
+        $done=experimentmail__send_admin_expiration_warning_mail(
+                  $admins[$mail['mail_recipient']],
+                  $expiration__text[$tlang],
+                  $footers[$tlang]
+              );
+        if ($done) {
+            $mails_sent++;
+            $deleted=experimentmail__delete_from_queue($mail['mail_id']);
+        } else {
+            $mail['error']="sending";
+            $errors[]=$mail;
+        }
+    }
+
+    // admin expiration warnings
+    foreach ($admin_expiration_warnings as $mail) {
+        $tlang=$admins[$mail['mail_recipient']]['language'];
+        $done=experimentmail__send_admin_expiration_warning_mail(
+                  $admins[$mail['mail_recipient']],
+                  $expiration_warning_text[$tlang],
                   $footers[$tlang]
               );
         if ($done) {
@@ -643,6 +695,17 @@ function experimentmail__send_noshow_warning_mail($mail,$part,$exp,$session,$war
     $message=process_mail_template($mailtext,$part)."\n".process_mail_template($footer,$part);
     $sender=$settings['support_mail'];
     $headers="From: ".$sender."\r\n";
+    $done=experimentmail__mail($recipient,$subject,$message,$headers);
+    return $done;
+}
+
+function experimentmail__send_admin_expiration_warning_mail($admin, $expiration_warning_text, $footer) {
+    global $settings;
+    $subject=$expiration_warning_text['subject'];
+    $mailtext=stripslashes($expiration_warning_text['text']);
+    $message=process_mail_template($mailtext,$admin)."\n".process_mail_template($footer,$admin);
+    $recipient = $admin['email'];
+    $headers="From: {$settings['support_mail']}\r\n";
     $done=experimentmail__mail($recipient,$subject,$message,$headers);
     return $done;
 }

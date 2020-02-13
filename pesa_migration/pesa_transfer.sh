@@ -44,6 +44,7 @@ pesa_add_new_public_content.sql
 pesa_extend_admin.sql
 pesa_extend_participants.sql
 pesa_update_error_message.sql
+pesa_set_objects.sql
 pesa_remove_options.sql)
 
 # transfering or_admin, this requires a .htaccess file

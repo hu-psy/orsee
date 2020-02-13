@@ -40,6 +40,20 @@ if ($proceed) {
                         WHERE admin_id= :a";
                 $done=or_query($query,$pars);
             }
+            if (isset($_REQUEST['expiration_date']) && is_array($_REQUEST['expiration_date'])) {
+                $pars=array();
+                foreach ($_REQUEST['expiration_date'] as $a=>$d) {
+                    $pars[]=array(':a'=>$a,':d'=>$d,':d2'=>$d);
+                }
+                $query="UPDATE ".table("admin")."
+                        SET expiration_warning_sent = CASE
+                                                          WHEN expiration_date <> :d THEN FALSE
+                                                          ELSE TRUE
+                                                      END,
+                            expiration_date = :d2
+                        WHERE admin_id= :a";
+                $done=or_query($query,$pars);
+            }
                 log__admin("admin_show_edit");
                 message(lang('changes_saved'));
                 redirect("admin/admin_show.php");
@@ -62,7 +76,7 @@ if ($proceed) {
 
     if (check_allow('admin_edit')) {
         echo '<tr style="background: '.$color['list_header_background'].'; color: '.$color['list_header_textcolor'].';">
-                <td colspan="5"></td>
+                <td colspan="6"></td>
                 <td><INPUT name="change" type="submit" class="button" value="'.lang('save_changes_in_list').'"></td>
                 <td></td>
             </tr>';
@@ -76,6 +90,7 @@ if ($proceed) {
                 <td>'.lang('type').'</td>
                 <td>'.lang('is_experimenter').'</td>
                 <td>'.lang('account').'</td>
+                <td>'.lang('expiration_date').'</td>
                 <td></td>
             </tr>
             </thead>
@@ -140,6 +155,15 @@ if ($proceed) {
                                     } else {
                                         if($admin['disabled']!='y') echo lang('account_enabled');
                                         else echo lang('account_disabled');
+                                    }
+                            echo '
+                            </td>
+                            </td>
+                                <td>';
+                                    if (check_allow('admin_edit')) {
+                                        echo '<input name="expiration_date[' . $admin['admin_id'] . ']" type="date" value="' . $admin['expiration_date'] . '">';
+                                    } else {
+                                        echo $admin['expiration_date'];
                                     }
                             echo '
                             </td>

@@ -34,6 +34,22 @@ insert into ##new_db##.or_options (option_id, option_type, option_name, option_v
 select max(option_id)+1 ,'general', 'maximum_assignments', '400'
 from ##new_db##.or_options;
 
+insert into ##new_db##.or_options (option_id, option_type, option_name, option_value)
+select max(option_id)+1 ,'general', 'delete_finished_experiments_after', '1095'
+from ##new_db##.or_options;
+
+insert into ##new_db##.or_options (option_id, option_type, option_name, option_value)
+select max(option_id)+1 ,'general', 'finished_experiment_limit', '28'
+from ##new_db##.or_options;
+
+insert into ##new_db##.or_options (option_id, option_type, option_name, option_value)
+select max(option_id)+1 ,'general', 'admin_expiration_objection_period', '30'
+from ##new_db##.or_options;
+
+insert into ##new_db##.or_options (option_id, option_type, option_name, option_value)
+select max(option_id)+1 ,'general', 'admin_delete_expired_account_limit', '365'
+from ##new_db##.or_options;
+
 insert into ##new_db##.or_options (option_id, option_type, option_name, option_value) 
 select max(option_id)+1 ,'general', 'inactivity_exclusion_limit', '546'
 from ##new_db##.or_options;
