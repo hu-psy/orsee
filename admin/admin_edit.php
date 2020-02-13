@@ -92,6 +92,10 @@ if ($proceed) {
             foreach (array('fname','lname') as $k) {
                 $_REQUEST[$k]=trim($_REQUEST[$k]);
             }
+            # reset expirtation_warning_sent if expiration_date is changed
+            if ($_REQUEST['expiration_date'] != $admin['expiration_date']){
+                $_REQUEST['expiration_warning_sent'] = 0;
+            }
             $done=orsee_db_save_array($_REQUEST,"admin",$admin_id,"admin_id");
             message(lang('changes_saved'));
             log__admin("admin_edit",$_REQUEST['adminname']);

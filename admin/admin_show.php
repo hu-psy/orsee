@@ -43,10 +43,14 @@ if ($proceed) {
             if (isset($_REQUEST['expiration_date']) && is_array($_REQUEST['expiration_date'])) {
                 $pars=array();
                 foreach ($_REQUEST['expiration_date'] as $a=>$d) {
-                    $pars[]=array(':a'=>$a,':d'=>$d);
+                    $pars[]=array(':a'=>$a,':d'=>$d,':d2'=>$d);
                 }
                 $query="UPDATE ".table("admin")."
-                        SET expiration_date= :d
+                        SET expiration_warning_sent = CASE
+                                                          WHEN expiration_date <> :d THEN FALSE
+                                                          ELSE TRUE
+                                                      END,
+                            expiration_date = :d2
                         WHERE admin_id= :a";
                 $done=or_query($query,$pars);
             }
