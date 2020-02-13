@@ -36,7 +36,8 @@ function cron__run_cronjobs() {
         'send_participant_statistics',
         'send_experiment_calendar',
         'run_webalizer',
-        'delete_old_experiments');
+        'delete_old_experiments',
+        'check_for_expired_experimenter_accounts');
 
     $query="SELECT * from ".table('cron_jobs')." WHERE enabled='y'";
     $result=or_query($query);
@@ -481,6 +482,7 @@ function cron__check_for_participant_exclusion() {
     return $mess;
 }
 
+
 function cron__delete_old_experiments(){
     global $settings;
 
@@ -532,5 +534,72 @@ function cron__delete_old_experiments(){
     }
 
     return $number . " experiments deleted";
+}
+
+function cron__check_for_expired_experimenter_accounts(){
+    global $settings;
+
+    $admin_table = table('admin');
+    $now = time();
+    $objection_period = $settings['admin_expiration_objection_period']; // [days]
+    $query="select admin_id, expiration_warning_sent, datediff(expiration_date, curdate()) as time_til_expiration
+            from {$admin_table}
+            where datediff(expiration_date, curdate()) <= {$objection_period}
+                  and disabled = 'n'";
+
+    $result=or_query($query);
+
+    $admin_to_be_warned = array();
+    $admin_to_be_disabled = array();
+    while ($line=pdo_fetch_assoc($result)) {
+        if($line["time_til_expiration"] <= 0 ){
+            # disable admin and sent notification
+            $admin_to_be_disabled[] = $line['admin_id'];
+            $mail_queue_table = table('mail_queue');
+            $query = "insert into {$mail_queue_table} (timestamp, mail_type, mail_recipient) values ({$now}, 'admin_expiration', {$line['admin_id']})";
+            or_query($query);
+        } elseif(!$line["expiration_warning_sent"]) {
+            # sent warning
+            $admin_to_be_warned[] = $line['admin_id'];
+            $mail_queue_table = table('mail_queue');
+            $query = "insert into {$mail_queue_table} (timestamp, mail_type, mail_recipient) values ({$now}, 'admin_account_warning', {$line['admin_id']})";
+            or_query($query);
+        }
+    }
+
+    $admin = implode(", ", $admin_to_be_warned);
+    $query = "update {$admin_table} set expiration_warning_sent=TRUE where admin_id in ({$admin})";
+    $result=or_query($query);
+
+    $admin = implode(", ", $admin_to_be_disabled);
+    $query = "update {$admin_table} set disabled='y' where admin_id in ({$admin})";
+    $result=or_query($query);
+
+    # delete admins
+    # unfortunately we cannot do this:
+    # $query = "delete from or_admin where disabled = 'y' and datediff(expiration_date, curdate()) < -365";
+    # so reset almost all entries to the default value
+    $query="update {$admin_table}
+            set adminname = admin_id,
+                fname = NULL,
+                lname = NULL,
+                email = NULL,
+                admin_type = NULL,
+                password_crypt = NULL,
+                experimenter_list = 'y',
+                language = NULL,
+                get_calendar_mail = 'y',
+                get_statistics_mail = 'y',
+                last_login_attempt = NULL,
+                failed_login_attempts = 0,
+                locked = 0,
+                pw_update_requested = 0,
+                privacy_policy_accepted = NULL,
+                expiration_date = current_timestamp()
+            where datediff(expiration_date, curdate()) <= -{$settings['admin_delete_expired_account_limit']}
+                  and disabled = 'y'";
+    $result=or_query($query);
+
+    return "warned: " . sizeof($admin_to_be_warned) . "\ndisabled: " . sizeof($admin_to_be_disabled) . "\ndeleted: " . $result->rowCount();
 }
 ?>
