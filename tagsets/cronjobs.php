@@ -37,7 +37,8 @@ function cron__run_cronjobs() {
         'send_experiment_calendar',
         'run_webalizer',
         'delete_old_experiments',
-        'check_for_expired_experimenter_accounts');
+        'check_for_expired_experimenter_accounts',
+        'auto_exclusion_inactive_participants');
 
     $query="SELECT * from ".table('cron_jobs')." WHERE enabled='y'";
     $result=or_query($query);
@@ -601,5 +602,84 @@ function cron__check_for_expired_experimenter_accounts(){
     $result=or_query($query);
 
     return "warned: " . sizeof($admin_to_be_warned) . "\ndisabled: " . sizeof($admin_to_be_disabled) . "\ndeleted: " . $result->rowCount();
+}
+
+function cron__auto_exclusion_inactive_participants(){
+    global $settings;
+
+    $participants_table = table('participants');
+    $now = time();
+    $objection_period = $settings['inactivity_exclusion_objection_period'] * 24 * 60 * 60;
+    $exclusion_limit = $now - $settings['inactivity_exclusion_limit'] * 24 * 60 * 60;
+    $warning_limit = $exclusion_limit + $objection_period;
+    $warning_limit_in_db_format = date("YmdHi", $warning_limit); // transfere seconds since epoche to YYYYMMDDhhmm (time format in or_sessions)
+
+    $query="select * from {$participants_table}
+            where (last_activity <= {$warning_limit}
+                   or last_activity is null)
+                  and participant_id not in (
+                      select participant_id
+                      from or_participate_at as a
+                      join or_sessions as b
+                      on a.session_id = b.session_id
+                      group by participant_id
+                      having max(session_start) > {$warning_limit_in_db_format}
+                  )
+                  and status_id = 1";
+
+    $result=or_query($query);
+
+    $participants_to_be_warned = array();
+    $participants_to_be_deleted = array();
+    while ($line=pdo_fetch_assoc($result)) {
+        if(is_null($line["warning_sent_on"])){
+            $participants_to_be_warned[] = $line['participant_id'];
+            $mail_queue_table = table('mail_queue');
+            $query = "insert into {$mail_queue_table} (timestamp, mail_type, mail_recipient) values ({$now}, 'inactivity_warning', {$line['participant_id']})";
+            or_query($query);
+        } elseif($now - $objection_period > strtotime($line['warning_sent_on'])) {
+            $participants_to_be_deleted[] = $line['participant_id'];
+        }
+    }
+
+    $participants = implode(", ", $participants_to_be_warned); 
+    $query = "update {$participants_table} set warning_sent_on=now() where participant_id in ({$participants})";
+    $result=or_query($query);
+
+    $participants = implode(", ", $participants_to_be_deleted); 
+    $query = "update {$participants_table}
+              set participant_id_crypt = NULL,
+                  password_crypted = NULL,
+                  confirmation_token = NULL,
+                  pwreset_token = NULL,
+                  pwreset_request_time = NULL,
+                  last_login_attempt = NULL,
+                  failed_login_attempts = NULL,
+                  locked = NULL,
+                  creation_time = NULL,
+                  deletion_time = NULL,
+                  subpool_id = 1,
+                  subscriptions = NULL,
+                  rules_signed = NULL,
+                  status_id = 2,
+                  number_reg = NULL,
+                  number_noshowup = NULL,
+                  last_enrolment = NULL,
+                  last_profile_update = NULL,
+                  last_activity = NULL,
+                  pending_profile_update_request = NULL,
+                  profile_update_request_new_pool = NULL,
+                  apply_permanent_queries = NULL,
+                  remarks = NULL,
+                  language = NULL,
+                  email = NULL,
+                  gender = NULL,
+                  year_of_birth = 9999,
+                  warning_sent_on = NULL
+              where participant_id in ({$participants})";
+
+    $result=or_query($query);
+    
+    return "warned: " . sizeof($participants_to_be_warned) . "\ndeleted: " . sizeof($participants_to_be_deleted);
 }
 ?>

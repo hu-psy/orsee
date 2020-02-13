@@ -312,7 +312,7 @@ function experimentmail__send_mails_from_queue($number=0,$type="",$experiment_id
     } else $squery="";
 
     $smails=array(); $smails_ids=array();
-    $invitations=array(); $reminders=array(); $bulks=array(); $warnings=array(); $admin_expiration_warnings=array(); $admin_expirations=array();
+    $invitations=array(); $reminders=array(); $bulks=array(); $warnings=array(); $admin_expiration_warnings=array(); $admin_expirations=array(); $inactivity_warnings=array();
     $errors=array();
     $reminder_text=array(); $warning_text=array(); $inv_texts=array();
     $exps=array(); $sesss=array(); $parts=array(); $admins=array(); $labs=array();
@@ -386,6 +386,10 @@ function experimentmail__send_mails_from_queue($number=0,$type="",$experiment_id
             $expiration_warning_text[$tlang]['text']=load_mail("admin_expiration_warning",$tlang);
             $expiration_warning_text[$tlang]['subject']=load_language_symbol('email_admin_expiration_warning_subject',$tlang);
         }
+        if ($ttype=="inactivity_warning" && !isset($warning_text[$tlang])) {
+            $inactivity_warning_text[$tlang]['text']=load_mail("public_inactivity_warning",$tlang);
+            $inactivity_warning_text[$tlang]['subject']=load_language_symbol('email_inactivity_warning_subject',$tlang);
+        }
         if (($ttype=="session_reminder" || $ttype=="noshow_warning") && !isset($labs[$tsess][$tlang])) {
             $labs[$tsess][$tlang]=laboratories__get_laboratory_text($sesss[$tsess]['laboratory_id'],$tlang);
         }
@@ -449,6 +453,9 @@ function experimentmail__send_mails_from_queue($number=0,$type="",$experiment_id
                 case "admin_expiration_warning":
                     $admin_expiration_warnings[]=$line;
                     break;
+                case "inactivity_warning":
+                    $inactivity_warnings[]=$line;
+                    break;
                 case "bulk_mail":
                     $bulks[]=$line;
                     break;
@@ -485,6 +492,23 @@ function experimentmail__send_mails_from_queue($number=0,$type="",$experiment_id
         $exps[$mail['experiment_id']],$sesss[$mail['session_id']],
         $warning_text[$tlang],$labs[$mail['session_id']][$tlang],
         $footers[$tlang]);
+        if ($done) {
+            $mails_sent++;
+            $deleted=experimentmail__delete_from_queue($mail['mail_id']);
+        } else {
+            $mail['error']="sending";
+            $errors[]=$mail;
+        }
+    }
+ 
+    // inactivity warnings
+    foreach ($inactivity_warnings as $mail) {
+        $tlang=$parts[$mail['mail_recipient']]['language'];
+        $done=experimentmail__send_inactivity_warning_mail(
+                  $parts[$mail['mail_recipient']],
+                  $inactivity_warning_text[$tlang],
+                  $footers[$tlang]
+              );
         if ($done) {
             $mails_sent++;
             $deleted=experimentmail__delete_from_queue($mail['mail_id']);
@@ -681,6 +705,18 @@ function experimentmail__send_admin_expiration_warning_mail($admin, $expiration_
     $mailtext=stripslashes($expiration_warning_text['text']);
     $message=process_mail_template($mailtext,$admin)."\n".process_mail_template($footer,$admin);
     $recipient = $admin['email'];
+    $headers="From: {$settings['support_mail']}\r\n";
+    $done=experimentmail__mail($recipient,$subject,$message,$headers);
+    return $done;
+}
+
+function experimentmail__send_inactivity_warning_mail($part, $inactivity_warning_text, $footer) {
+    global $settings;
+    $subject=$inactivity_warning_text['subject'];
+    $part["last_activity"] = date("Y-m-d H:i", $part["last_activity"]);
+    $mailtext=stripslashes($inactivity_warning_text['text']);
+    $message=process_mail_template($mailtext,$part)."\n".process_mail_template($footer,$part);
+    $recipient = $part['email'];
     $headers="From: {$settings['support_mail']}\r\n";
     $done=experimentmail__mail($recipient,$subject,$message,$headers);
     return $done;

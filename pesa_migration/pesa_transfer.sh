@@ -42,6 +42,7 @@ pesa_add_new_options.sql
 pesa_add_new_lang_symbols.sql
 pesa_add_new_public_content.sql
 pesa_extend_admin.sql
+pesa_extend_participants.sql
 pesa_update_error_message.sql
 pesa_set_objects.sql
 pesa_remove_options.sql)
