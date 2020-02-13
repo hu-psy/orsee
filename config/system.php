@@ -754,6 +754,28 @@ $system__options_general[]=array(
 );
 
 $system__options_general[]=array('type'=>'line');
+$system__options_general[]=array('type'=>'comment',
+                                 'text'=>'Auto Account Expiration Settings');
+
+$system__options_general[]=array(
+                               'option_name'=>'inactivity_exclusion_limit',
+                               'option_text'=>'Max. number of inactive days for participants',
+                               'type'=>'textline',
+                               'default_value'=>'546',
+                               'size'=>'4',
+                               'maxlength'=>'3',
+                           );
+
+$system__options_general[]=array(
+                               'option_name'=>'inactivity_exclusion_objection_period',
+                               'option_text'=>'Send a warning x days before participant exclusion because of inactivity',
+                               'type'=>'textline',
+                               'default_value'=>'30',
+                               'size'=>'3',
+                               'maxlength'=>'2',
+                           );
+
+$system__options_general[]=array('type'=>'line');
 
 
 $system__options_general[]=array('type'=>'comment',

@@ -482,11 +482,12 @@ function cron__check_for_participant_exclusion() {
 
 
 function cron__auto_exclusion_inactive_participants(){
-    // 1. determine participants for warnings
+    global $settings;
+
     $participants_table = table('participants');
     $now = time();
-    $objection_period = 30 * 24 * 60 * 60;
-    $exclusion_limit = $now - 1.5 * 12 * 30 * 24 * 60 * 60;
+    $objection_period = $settings['inactivity_exclusion_objection_period'] * 24 * 60 * 60;
+    $exclusion_limit = $now - $settings['inactivity_exclusion_limit'] * 24 * 60 * 60;
     $warning_limit = $exclusion_limit + $objection_period;
     $warning_limit_in_db_format = date("YmdHi", $warning_limit); // transfere seconds since epoche to YYYYMMDDhhmm (time format in or_sessions)
 
