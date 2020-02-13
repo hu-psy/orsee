@@ -431,6 +431,7 @@ function cron__check_for_finished_sessions(){
 }
 
 function cron__check_for_finished_experiments(){
+    global $settings;
     // get experiments which arn't finished and their last session
     $exp_tbl = table('experiments');
     $ses_tbl = table('sessions');
@@ -444,11 +445,11 @@ function cron__check_for_finished_experiments(){
 
     $now=time();
     $number = 0;
-    $four_weeks = 4 * 7 * 24 * 60 * 60;
+    $weeks = $settings['finished_experiment_limit'] * 24 * 60 * 60;
     while ($line=pdo_fetch_assoc($result)) {
         // if the last session start time is more than 4 weeks ago the experiment is considered to be finished
         $session_start = ortime__sesstime_to_unixtime($line['session_start']);
-        if ($session_start + $four_weeks < $now) {
+        if ($session_start + $weeks < $now) {
             $query = "update {$exp_tbl} set experiment_finished = 'y' where experiment_id = '{$line['experiment_id']}'";
             $done = or_query($query);
             $number++;
