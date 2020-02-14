@@ -89,16 +89,58 @@ if ($proceed) {
                     if (!isset($_REQUEST['remark'])) $remark='';
                     else $remark=', '.$_REQUEST['remark'];
                     $pars=array();
-                    foreach ($plist_ids as $pid) {
-                        $pars[]=array(':participant_id'=>$pid,
-                                    ':status_id'=>$_REQUEST['new_status'],
-                                    ':remark'=>$remark);
-                        log__admin("bulk_change_status","participant_id: ".$pid);
+
+                    # HACK: participant_statuses 2 means unsubscribed
+                    if($_REQUEST['new_status'] == "2") {
+                        foreach ($plist_ids as $pid) {
+                            $pars[]=array(':participant_id'=>$pid,
+                                          ':status_id'=>$_REQUEST['new_status']);
+                            log__admin("bulk_change_status","participant_id: ".$pid);
+                        }
+
+                        $query = "update ".table('participants')."
+                                  set participant_id_crypt = NULL,
+                                      password_crypted = NULL,
+                                      confirmation_token = NULL,
+                                      pwreset_token = NULL,
+                                      pwreset_request_time = NULL,
+                                      last_login_attempt = NULL,
+                                      failed_login_attempts = NULL,
+                                      locked = NULL,
+                                      creation_time = NULL,
+                                      deletion_time = NULL,
+                                      subpool_id = 1,
+                                      subscriptions = NULL,
+                                      rules_signed = NULL,
+                                      status_id = :status_id,
+                                      number_reg = NULL,
+                                      number_noshowup = NULL,
+                                      last_enrolment = NULL,
+                                      last_profile_update = NULL,
+                                      last_activity = NULL,
+                                      pending_profile_update_request = NULL,
+                                      profile_update_request_new_pool = NULL,
+                                      apply_permanent_queries = NULL,
+                                      remarks = NULL,
+                                      language = NULL,
+                                      email = NULL,
+                                      gender = NULL,
+                                      year_of_birth = 9999,
+                                      warning_sent_on = NULL
+                                  where participant_id = :participant_id";
+                    } else {
+                        foreach ($plist_ids as $pid) {
+                            $pars[]=array(':participant_id'=>$pid,
+                                          ':status_id'=>$_REQUEST['new_status'],
+                                          ':remark'=>$remark);
+                            log__admin("bulk_change_status","participant_id: ".$pid);
+                        }
+
+                        $query="UPDATE ".table('participants')."
+                                SET status_id= :status_id,
+                                remarks= CONCAT(remarks, :remark)
+                                WHERE participant_id = :participant_id";
                     }
-                    $query="UPDATE ".table('participants')."
-                            SET status_id= :status_id,
-                            remarks= CONCAT(remarks, :remark)
-                            WHERE participant_id = :participant_id";
                     $done=or_query($query,$pars);
                     message($num_participants.' '.lang('xxx_participants_moved_to_new_status'));
                     redirect('admin/'.thisdoc().'?active='.$active.'&search_sort='.$search_sort);
