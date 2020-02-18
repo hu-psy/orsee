@@ -33,7 +33,17 @@ alter table ##new_db##.or_participants add column year_of_birth int(4) not null;
 
 insert into ##new_db##.or_participants(participant_id, participant_id_crypt, subpool_id, email, subscriptions, gender, number_reg, number_noshowup, rules_signed, `language`, year_of_birth)
 select participant_id, participant_id_crypt, subpool_id, email, new_subs, gender, number_reg, number_noshowup, rules_signed, `language`, cast(year_of_birth as int)
-from ##old_db##.or_participants where deleted = "n" and excluded = "n" and unsuitable = "n";
+from ##old_db##.or_participants
+where deleted = "n"
+      and excluded = "n"
+      and unsuitable = "n"
+      and participant_id in (
+          select distinct participant_id
+          from ##old_db##.or_participate_at as a
+          join ##old_db##.or_sessions as b
+          on a.session_id = b.session_id
+          where session_start_year > 2016
+      );
 
 /* set status_id to 1 because we have only not deleted and not excluded ones */
 update ##new_db##.or_participants set status_id=1;
