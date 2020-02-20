@@ -4,11 +4,19 @@ db_user=$3
 db_passwd=$4
 
 if [ -z "$old_db" ]; then
-    old_db="pesa"
+    old_db="oldpesa"
 fi
 
 if [ -z "$new_db" ]; then
-    new_db="pesa2019"
+    new_db="pesa"
+fi
+
+if [ -z "$db_user" ]; then
+    db_user="pesauser"
+fi
+
+if [ -z "$db_passwd" ]; then
+    db_passwd="pesa"
 fi
 
 #!/bin/bash
