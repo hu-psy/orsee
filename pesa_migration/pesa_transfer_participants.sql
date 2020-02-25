@@ -37,9 +37,7 @@ from ##old_db##.or_participants
 where participant_id in (
           select distinct participant_id
           from ##old_db##.or_participate_at
-          where experiment_id in (
-              select experiment_id from ##new_db##.or_experiments
-          )
+          where session_id in (select session_id from ##new_db##.or_sessions)
       );
 
 /* set status_id to 1 */
