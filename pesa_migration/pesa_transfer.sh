@@ -59,7 +59,10 @@ pesa_set_objects.sql
 pesa_remove_options.sql)
 
 # transfering or_admin, this requires a .htaccess file
-cat ./pesa_transfer_admin.sh | sed "s/##new_db##/$new_db/g" | sed "s/##old_db##/$old_db/g" | bash
+if ! sed "s/##new_db##/$new_db/g" ./pesa_transfer_admin.sh | sed "s/##old_db##/$old_db/g" | bash; then
+    echo "transfering admins failed"
+    exit 1
+fi
 
 for sql_file in ${!array[@]}
 do
