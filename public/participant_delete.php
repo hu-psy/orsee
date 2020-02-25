@@ -13,10 +13,36 @@ if ($proceed) {
     if (isset($_REQUEST['reallydelete']) && $_REQUEST['reallydelete']=="12345" && isset($_REQUEST['doit'])) {
         $default_inactive_status=participant_status__get("is_default_inactive");
         $pars=array(':participant_id'=>$participant_id,':default_inactive_status'=>$default_inactive_status);
-        $query="UPDATE ".table('participants')."
-                SET status_id= :default_inactive_status,
-                deletion_time='".time()."'
-                WHERE participant_id= :participant_id";
+        $query = "update ".table('participants')."
+                  set participant_id_crypt = NULL,
+                      password_crypted = NULL,
+                      confirmation_token = NULL,
+                      pwreset_token = NULL,
+                      pwreset_request_time = NULL,
+                      last_login_attempt = NULL,
+                      failed_login_attempts = NULL,
+                      locked = NULL,
+                      creation_time = NULL,
+                      deletion_time = NULL,
+                      subpool_id = 1,
+                      subscriptions = NULL,
+                      rules_signed = NULL,
+                      status_id = :default_inactive_status,
+                      number_reg = NULL,
+                      number_noshowup = NULL,
+                      last_enrolment = NULL,
+                      last_profile_update = NULL,
+                      last_activity = NULL,
+                      pending_profile_update_request = NULL,
+                      profile_update_request_new_pool = NULL,
+                      apply_permanent_queries = NULL,
+                      remarks = NULL,
+                      language = NULL,
+                      email = NULL,
+                      gender = NULL,
+                      year_of_birth = 9999,
+                      warning_sent_on = NULL
+                  where participant_id = :participant_id";
         $done=or_query($query,$pars);
         log__participant("delete",$participant_id);
         $form=false;

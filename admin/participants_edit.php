@@ -60,6 +60,39 @@ if ($proceed) {
             }
 
             $participant['subscriptions'] = participant__subscriptions_to_ext_experiment_id_db_string($participant['subscriptions']);
+
+            # HACK: if status_id is equal to 2 (unsubscribe) set all other values to NULL
+            if (isset($participant['status_id']) && $participant['status_id'] == "2") {
+                $participant['participant_id_crypt'] = NULL;
+                $participant['password_crypted'] = NULL;
+                $participant['confirmation_token'] = NULL;
+                $participant['pwreset_token'] = NULL;
+                $participant['pwreset_request_time'] = NULL;
+                $participant['last_login_attempt'] = NULL;
+                $participant['failed_login_attempts'] = NULL;
+                $participant['locked'] = NULL;
+                $participant['creation_time'] = NULL;
+                $participant['deletion_time'] = NULL;
+                $participant['subpool_id'] = 1;
+                $participant['subscriptions'] = NULL;
+                $participant['rules_signed'] = NULL;
+                $participant['status_id'] = 2;
+                $participant['number_reg'] = NULL;
+                $participant['number_noshowup'] = NULL;
+                $participant['last_enrolment'] = NULL;
+                $participant['last_profile_update'] = NULL;
+                $participant['last_activity'] = NULL;
+                $participant['pending_profile_update_request'] = NULL;
+                $participant['profile_update_request_new_pool'] = NULL;
+                $participant['apply_permanent_queries'] = NULL;
+                $participant['remarks'] = NULL;
+                $participant['language'] = NULL;
+                $participant['email'] = NULL;
+                $participant['gender'] = NULL;
+                $participant['year_of_birth'] = 9999;
+                $participant['warning_sent_on'] = NULL;
+            }
+
             $done=orsee_db_save_array($participant,"participants",$participant['participant_id'],"participant_id");
             if ($done) message(lang('changes_saved'));
 
