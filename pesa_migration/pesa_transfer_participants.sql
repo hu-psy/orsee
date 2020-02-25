@@ -50,7 +50,7 @@ update ##new_db##.or_participants set status_id=3
 where participant_id in (
     select participant_id
     from ##old_db##.or_participants
-    where deleted = "n"
-          and excluded = "n"
-          and unsuitable = "n"
+    where deleted = "y"
+          or excluded = "y"
+          or unsuitable = "y"
 );
