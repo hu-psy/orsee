@@ -14,6 +14,7 @@ update ##old_db##.or_participate_at set pstatus_id = 1 where shownup='y' and par
 insert into ##new_db##.or_participate_at(participate_id, participant_id, experiment_id, invited, 
 session_id, pstatus_id) 
 select participate_id, participant_id, experiment_id, invited_tiny, session_id, pstatus_id from ##old_db##.or_participate_at
-	where experiment_id in (select experiment_id from ##new_db##.or_experiments);
+where experiment_id in (select experiment_id from ##new_db##.or_experiments)
+      and participant_id in (select participant_id from ##new_db##.or_participants);
 
 

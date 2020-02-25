@@ -26,4 +26,4 @@ update ##old_db##.or_sessions set session_status = "completed" where experiment_
 
 insert into ##new_db##.or_sessions(session_id, experiment_id, session_start, session_duration_hour, session_duration_minute, session_reminder_hours, send_reminder_on, reminder_checked, reminder_sent, noshow_warning_sent, registration_end_hours, part_needed, part_reserve, session_remarks, laboratory_id, session_status)
 select session_id, experiment_id, session_start, session_duration_hour, session_duration_minute, session_reminder_hours, send_reminder_on, reminder_checked, reminder_sent, noshow_warning_sent, registration_end_hours, part_needed, part_reserve, session_remarks, laboratory_id, session_status from ##old_db##.or_sessions
-	where session_start_year > 2016 and experiment_id in (select experiment_id from ##new_db##.or_experiments);
+	where experiment_id in (select experiment_id from ##new_db##.or_experiments);
