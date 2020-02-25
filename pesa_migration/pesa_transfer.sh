@@ -1,12 +1,22 @@
 old_db=$1
 new_db=$2
+db_user=$3
+db_passwd=$4
 
 if [ -z "$old_db" ]; then
-    old_db="pesa"
+    old_db="oldpesa"
 fi
 
 if [ -z "$new_db" ]; then
-    new_db="pesa2019"
+    new_db="pesa"
+fi
+
+if [ -z "$db_user" ]; then
+    db_user="pesauser"
+fi
+
+if [ -z "$db_passwd" ]; then
+    db_passwd="pesa"
 fi
 
 #!/bin/bash
@@ -56,4 +66,15 @@ do
 	#echo "$sql_file ${array[$sql_file]}"
 	echo ${array[$sql_file]}
 	cat ${array[$sql_file]} | sed "s/##new_db##/$new_db/g" | sed "s/##old_db##/$old_db/g" | mysql
+done
+
+path=$(dirname $0)
+for i in ${path}/etherpad/*.txt; do
+    [ -f "$i" ] || break
+    python ${path}/../utils/parse_etherpad.py ${i} ${i}.json
+done
+
+for i in ${path}/etherpad/*.json; do
+    [ -f "$i" ] || break
+    python ${path}/../utils/set_text.py ${db_user} ${db_passwd} --file ${i} --db ${new_db}
 done

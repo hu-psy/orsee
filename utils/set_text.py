@@ -18,7 +18,14 @@ def main(host, user, passwd, db, file_name):
             data = json.load(fp)
 
         for entry in data:
-            cur.execute('update or_lang set en=%s, de=%s where lang_id=%s', (entry['en'], entry['de'], entry['id']))
+            if 'de' in entry.keys() and 'en' in entry.keys() and 'id' in entry.keys():
+                cur.execute('update or_lang set en=%s, de=%s where lang_id=%s', (entry['en'], entry['de'], entry['id']))
+            elif 'de' in entry.keys() and 'id' in entry.keys():
+                cur.execute('update or_lang set de=%s where lang_id=%s', (entry['de'], entry['id']))
+            elif 'en' in entry.keys() and 'id' in entry.keys():
+                cur.execute('update or_lang set en=%s where lang_id=%s', (entry['en'], entry['id']))
+            else:
+                print("Warning: following entry misses important keys (id and de or en are required):\n{}".format(entry))
 
     except mdb.Error as e:
         print("Error %d: %s" % (e.args[0], e.args[1]))
