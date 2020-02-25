@@ -14,6 +14,7 @@ array=(pesa_transfer_experiment_types.sql
 pesa_add_online_experiment_table.sql
 pesa_transfer_experiments.sql
 pesa_transfer_sessions.sql
+pesa_extend_sessions.sql
 pesa_transfer_bulk_mail_texts.sql
 pesa_transfer_lang_labs.sql
 pesa_transfer_faqs.sql

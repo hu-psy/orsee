@@ -1,6 +1,22 @@
 insert into ##new_db##.or_experiments(experiment_id, experiment_name, experiment_public_name, experiment_type, experiment_ext_type, experiment_class, experiment_description, experimenter_mail, sender_mail, experiment_public, experimenter, access_restricted, experiment_finished, hide_in_stats, hide_in_cal, experiment_link_to_paper) 
 select experiment_id, experiment_name, experiment_public_name, experiment_type, experiment_ext_type, experiment_class, experiment_description, experimenter_mail, sender_mail, experiment_public, experimenter, access_restricted, experiment_finished, hide_in_stats, hide_in_cal, experiment_link_to_paper
-from ##old_db##.or_experiments where experiment_id in (select experiment_id from ##old_db##.or_sessions where session_start_year > 2016);
+from ##old_db##.or_experiments where experiment_id in (select experiment_id from ##old_db##.or_sessions where session_start_year > 2017)
+                                     or online_survey_start > 1483225200
+                                     or online_survey_stop > 1483225200;
+
+insert into ##new_db##.or_online_experiments(experiment_id, link, begin, end)
+select experiment_id, online_survey_link,
+    case
+        when online_survey_start is not NULL then from_unixtime(online_survey_start)
+        else from_unixtime(online_survey_stop)
+    end,
+    case
+        when online_survey_stop is not NULL then from_unixtime(online_survey_stop)
+        else from_unixtime(online_survey_start)
+    end
+from ##old_db##.or_experiments
+where experiment_id in (select experiment_id from ##new_db##.or_experiments)
+      and (online_survey_start > 1483225200 or online_survey_stop > 1483225200);
 
 /* experiment_class in or_experiments uses |<content_name>| from or_lang
    content_name is already used in column experiment_class but the || are missing*/

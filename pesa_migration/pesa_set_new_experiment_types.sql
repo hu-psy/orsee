@@ -10,13 +10,10 @@ INSERT INTO `##new_db##`.`or_experiment_types` (`exptype_id`, `exptype_name`, `e
 alter table ##new_db##.or_participants add new_subs varchar(50);
 
 update ##new_db##.or_participants set new_subs = '';
+update ##new_db##.or_participants set new_subs = concat(new_subs,',|1|') where subscriptions like '%2%' or subscriptions like '%3%';
 update ##new_db##.or_participants set new_subs = concat(new_subs,',|2|') where subscriptions like '%1%';
-update ##new_db##.or_participants set new_subs = concat(new_subs,',|1|') where subscriptions like '%2%';
-update ##new_db##.or_participants set new_subs = concat(new_subs,',|3|') where subscriptions like '%5%';
+update ##new_db##.or_participants set new_subs = concat(new_subs,',|3|') where subscriptions like '%5%' or subscriptions like '%6%';
 update ##new_db##.or_participants set new_subs = concat(new_subs,',|4|') where subscriptions like '%4%';
-update ##new_db##.or_participants set new_subs = concat(new_subs,',|1|,|2|') where subscriptions = '|3|';
-update ##new_db##.or_participants set new_subs = concat(new_subs,',|3|,|4|') where subscriptions = '|6|';
-update ##new_db##.or_participants set new_subs = concat(new_subs,',|1|,|2|,|3|,|4|') where subscriptions = '|3|,|6|' or subscriptions = '|6|,|3|';
 
 update ##new_db##.or_participants set subscriptions = substring(new_subs, 2);
 
@@ -26,12 +23,16 @@ alter table ##new_db##.or_participants drop column new_subs;
 alter table ##new_db##.or_experiments add new_subs varchar(50);
 
 update ##new_db##.or_experiments set new_subs = '';
-update ##new_db##.or_experiments set new_subs = concat(new_subs,',|2|') where experiment_ext_type like '%1%';
-update ##new_db##.or_experiments set new_subs = concat(new_subs,',|1|') where experiment_ext_type like '%2%';
-update ##new_db##.or_experiments set new_subs = concat(new_subs,',|3|') where experiment_ext_type like '%5%';
-update ##new_db##.or_experiments set new_subs = concat(new_subs,',|4|') where experiment_ext_type like '%4%';
+update ##new_db##.or_experiments set new_subs = concat(new_subs,',2') where experiment_ext_type like '%1%';
+update ##new_db##.or_experiments set new_subs = concat(new_subs,',1') where experiment_ext_type like '%2%' or experiment_ext_type like '%3%';
+update ##new_db##.or_experiments set new_subs = concat(new_subs,',3') where experiment_ext_type like '%5%' or experiment_ext_type like '%6%';
+update ##new_db##.or_experiments set new_subs = concat(new_subs,',4') where experiment_ext_type like '%4%';
 
 update ##new_db##.or_experiments set experiment_ext_type = substring(new_subs, 2);
+
+/* the experiments can only have one external experimente type so take the one with payment for experiments which have two types */
+update ##new_db##.or_experiments set experiment_ext_type = 2 where experiment_ext_type = "2,1";
+update ##new_db##.or_experiments set experiment_ext_type = 4 where experiment_ext_type = "3,4";
 
 alter table ##new_db##.or_experiments drop column new_subs;
 
