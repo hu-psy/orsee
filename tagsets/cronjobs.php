@@ -692,7 +692,7 @@ function cron__clean_participants(){
     $start_number = pdo_fetch_assoc($result)['number'];
 
     $query = "delete from {$part_tbl}
-              where participant_id is not in (select distinct participant_id from {$part_at_tbl} where session_id != 0)
+              where participant_id not in (select distinct participant_id from {$part_at_tbl} where session_id != 0)
               and status_id = 2";
     $result=or_query($query);
 
