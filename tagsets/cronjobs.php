@@ -38,7 +38,8 @@ function cron__run_cronjobs() {
         'run_webalizer',
         'delete_old_experiments',
         'check_for_expired_experimenter_accounts',
-        'auto_exclusion_inactive_participants');
+        'auto_exclusion_inactive_participants',
+        'clean_participants');
 
     $query="SELECT * from ".table('cron_jobs')." WHERE enabled='y'";
     $result=or_query($query);
@@ -682,4 +683,24 @@ function cron__auto_exclusion_inactive_participants(){
     
     return "warned: " . sizeof($participants_to_be_warned) . "\ndeleted: " . sizeof($participants_to_be_deleted);
 }
+function cron__clean_participants(){
+    $part_tbl = table('participants');
+    $part_at_tbl = table('participate_at');
+
+    $query = "select count(*) as number from {$part_tbl}";
+    $result = or_query($query);
+    $start_number = pdo_fetch_assoc($result)['number'];
+
+    $query = "delete from {$part_tbl}
+              where participant_id is not in (select distinct participant_id from {$part_at_tbl} where session_id != 0)
+              and status_id = 2";
+    $result=or_query($query);
+
+    $query = "select count(*) as number from {$part_tbl}";
+    $result = or_query($query);
+    $end_number = pdo_fetch_assoc($result)['number'];
+
+    return $start_number - $end_number;
+}
+
 ?>
