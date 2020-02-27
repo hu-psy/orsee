@@ -1,21 +1,12 @@
 # Anleitung zur Migration  von PESA
 
-1. hu-psy Branch nach Anleitung (http://www.orsee.org/web/install_notes.php) installieren
-   * Achtung: Die neue Datenbank muss pesa2019 heißen (wird in den Skripten so angenommen)
-2. Die alte Pesa-Datenbank als pesa importieren (wird in den Skripten so angenommen)
-3. Die .htaccess Datei des alten PESA-Servers in dieses Verzeichnis kopieren (nur diese Admins werden übernommen)
-4. Das Skript pesa_transfer.sh ausführen (gegebenfalls als root)
-5. Als Administrator einloggen und weitere Konfigurationen vornehmen (alternativ in der Datenbank anpassen), z.B.:
-   * General Settings 
-     * Allow subjects to cancel their session enrolment? -> yes
-     * How should subjects authenticate with the system? -> Email address and password
-     * Do subjects have to accept the lab rules when enroling? -> yes
-     * Do subjects have to accept the privacy policy when enroling? -> yes
-     * System support email address (used as sender for most emails)? -> richtige Supportadresse?
-   * Participant Profile Field
-     * Diverse als Gender hinzufügen (Gender -> edit)
-   * Languages -> add symbol -> Texte für neues Gender in den gegebenen Sprachen hinzufügen
-
-### Sonstiges:
-* Alle Querys, die auf der or_lang Tabelle arbeiten, verschieben den Index um 220004 damit es zu keinen Konflikten beim einfügen gibt, da der größte Index in eine frischen Orsee3 or_lang Tabelle 220003 ist.
-
+0. Mailserver deaktivieren (damit nicht versehentlich emails verschickt werden)
+1. aktuellen hu-psy branch auschecken
+2. Dump der alten Datenbank durchführen (da bei der Migration die alte Datenbank verändert wird)
+3. Dump auf dem neuen Server importieren
+4. .htaccess Datei vom alten Server kopieren und als htaccess im pesa_migration Ordner speichern
+5. Texte aus Etherpad in pesa_migration/etherpad als txt und im richtigen Format speichern
+6. pesa_migration/pesa_init.sh ausführen
+7. pesa_migration/pesa_transfer.sh ausführen
+8. (optional) für einen Testlauf des Systems die Skripte utils/set_experimenter.py (aktiveren der Experimentatoren, die testen sollen) und utils/set_email.py (alle Teilnehmer gleiche Email)  ausführen
+9. Mailserver wieder aktivieren
