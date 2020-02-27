@@ -1,4 +1,4 @@
-    <?php
+<?php
 // part of orsee. see orsee.org
 // THIS FILE WILL CHANGE FROM VERSION TO VERSION. BETTER NOT EDIT.
 $system__version="3.0.5";
