@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ ! -r htaccess ]; then
+    echo "htaccess file doesn't exists or is not readable"
+    exit 1
+fi
+
 admins=($(grep "Require user" htaccess | sed "s/Require user//g"))
 len=${#admins[@]}
 last=${admins[$len-1]}
