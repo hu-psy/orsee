@@ -8,5 +8,6 @@
 5. Texte aus Etherpad in pesa_migration/etherpad als txt und im richtigen Format speichern
 6. pesa_migration/pesa_init.sh ausführen
 7. pesa_migration/pesa_transfer.sh ausführen
-8. (optional) für einen Testlauf des Systems die Skripte utils/set_experimenter.py (aktiveren der Experimentatoren, die testen sollen) und utils/set_email.py (alle Teilnehmer gleiche Email)  ausführen
-9. Mailserver wieder aktivieren
+8. (optional) für einen Testlauf des Systems die Skripte utils/set_experimenter.py (aktiveren der Experimentatoren, die testen sollen) und utils/set_emails.py (alle Teilnehmer gleiche Email) ausführen
+9. (optional) für einen Testlauf die Authentifizierung für Teilnehmer auf URL-Token stellen
+10. Mailserver wieder aktivieren
