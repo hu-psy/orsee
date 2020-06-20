@@ -8,22 +8,21 @@ body {
 	margin-left: 0px;
 	margin-right: 0px;
 	margin-bottom: 2px;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 10pt;
+	font: normal 100%/1.4 "Lucida Grande", Verdana, Lucida, Helvetica, Arial, sans-serif;
+	/*font-family: Arial, Helvetica, sans-serif;
+	font-size: 10pt;*/
 	color: black;
 }
 
 /* general font (basically, all content is in some table cell */
 td, th {
-	font-family: Arial, Helvetica, sans-serif;
+        font: normal 100%/1.4 "Lucida Grande", Verdana, Lucida, Helvetica, Arial, sans-serif;
 	text-decoration: none;
-	font-size: 10pt;
 }
 
 /* main title of each page, used in style's html_header.php */
 .page_title {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 20pt;
+        font: Large 100%/1.4 "Lucida Grande", Verdana, Lucida, Helvetica, Arial, sans-serif;
 	text-decoration: none;
 	text-transform: uppercase;
 	text-align: left;
@@ -53,19 +52,19 @@ h4,h5,h6 {
 /* used whenever a small font is needed */
 .small {
 	font-family: Arial;
-	font-size: 8pt;
+	font-size: 12pt;
 }
 
 /* navigation menu */
 .menu_title {
 	font-family: Arial, Helvetica, sans-serif;
 	font-weight: bold;
-	font-size: 10pt;
+	font-size: 14pt;
 }
 
 .menu_item {
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 10pt;
+	font-size: 12pt;
 	}
  
 /* form elements */
