@@ -22,7 +22,7 @@ td, th {
 
 /* main title of each page, used in style's html_header.php */
 .page_title {
-	font-family: Helvetica, Arialsans-serif;
+	font-family: Helvetica, Arial, sans-serif;
 	font-size: 20pt;
 	text-decoration: none;
 	text-transform: uppercase;
