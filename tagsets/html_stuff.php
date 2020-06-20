@@ -496,12 +496,12 @@ $menu[]=            array(
                             'menu_area'=>'impressum',
                             'entrytype'=>'link',
                             'lang_item'=>'impressum',
-                            'link'=>'/public/impressum.php',
+                            'link'=>'https://www.hu-berlin.de/de/hu/impressum',
                             'icon'=>'',
                             'show_if_not_logged_in'=>1,
                             'show_if_logged_in'=>1
                             );
-$menu[]=            array(
+/*$menu[]=            array(
                             'menu_area'=>'contact',
                             'entrytype'=>'link',
                             'lang_item'=>'contact',
@@ -509,7 +509,7 @@ $menu[]=            array(
                             'icon'=>'',
                             'show_if_not_logged_in'=>1,
                             'show_if_logged_in'=>1
-                            );
+		    );*/
     return $menu;
 }
 
