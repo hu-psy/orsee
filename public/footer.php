@@ -3,14 +3,14 @@
 
 echo '<BR><BR><BR>';
 if ($settings['support_mail']) {
-    echo '<center>
+    /*echo '<center>
         <P class="small" align=center>';
-    echo lang('for_questions_contact_xxx');
+    echo lang('for_questions_contact_xxx');*/
     echo ' ';
-    helpers__scramblemail($settings['support_mail']);
+    /*helpers__scramblemail($settings['support_mail']);
     echo $settings['support_mail'];
     echo '</A>';
-    echo '.<BR><BR><BR></CENTER>';
+    echo '.<BR><BR><BR></CENTER>';*/
 }
 
     debug_output();
