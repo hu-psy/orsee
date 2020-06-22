@@ -9,7 +9,9 @@ include "header.php";
 if ($proceed) {
     echo "<center><BR>";
     show_message();
+    echo '<TABLE class="or_formtable" style="width: 100%;text-align: center"><TR><TD>';
     echo content__get_content("mainpage_welcome");
+    echo '</TD></TR></TABLE>';
     if (!isset($addp)) $addp="";
     if ($addp) $sign="&"; else $sign="?";
     $langarray=lang__get_public_langs();
