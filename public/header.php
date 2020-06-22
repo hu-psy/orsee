@@ -131,8 +131,8 @@ if ($proceed) {
             $statuses=participant_status__get_statuses();
             $statuses_profile=participant_status__get("access_to_profile");
             if (isset($participant) && !in_array($participant['status_id'],$statuses_profile)) {
-                message ($statuses[$participant['status_id']]['error']." ".
-                lang('if_you_have_questions_write_to')." ".support_mail_link());
+                message ($statuses[$participant['status_id']]['error']." "." ");
+			/*lang('if_you_have_questions_write_to')." ".support_mail_link())*/;
                 redirect("public/");
             }
         }
