@@ -1,7 +1,5 @@
 <style type="text/css">
 
-<!--
-
 /* general body settings */
 body {
 	margin-top: 0px;
@@ -18,6 +16,16 @@ body {
 td, th {
         font: normal 100%/1.4 "Lucida Grande", Verdana, Lucida, Helvetica, Arial, sans-serif;
 	text-decoration: none;
+}
+
+p {
+	text-align: justify;
+	word-wrap: break-word;
+	padding: 0 10px 0 10px;
+	width: 100%;
+	hyphens: auto;
+        -webkit-hyphens: auto;
+        -ms-hyphens: auto;
 }
 
 /* main title of each page, used in style's html_header.php */
@@ -47,6 +55,11 @@ h4,h5,h6 {
 	text-decoration: none;
 	font-weight: bold;
 	margin-bottom: 6px;
+}
+
+h5 {
+	font-size: 11pt;
+	text-decoration: underline;
 }
 
 /* used whenever a small font is needed */
@@ -445,4 +458,3 @@ table.or_message {
 	font-weight: normal;
 }
 
-//-->
