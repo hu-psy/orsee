@@ -9,7 +9,7 @@ if ($proceed) {
 }
 if ($proceed) {
     echo '<center><BR>
-            <TABLE class="or_formtable" style="width: 80%"><TR><TD>';
+            <TABLE class="or_formtable" style="width: 100%"><TR><TD>';
         echo content__get_content("privacy_policy");
         echo '
             </TD></TR></TABLE>
