@@ -501,7 +501,7 @@ $menu[]=            array(
                             'show_if_not_logged_in'=>1,
                             'show_if_logged_in'=>1
                             );
-/*$menu[]=            array(
+$menu[]=            array(
                             'menu_area'=>'contact',
                             'entrytype'=>'link',
                             'lang_item'=>'contact',
@@ -509,7 +509,7 @@ $menu[]=            array(
                             'icon'=>'',
                             'show_if_not_logged_in'=>1,
                             'show_if_logged_in'=>1
-		    );*/
+		    );
     return $menu;
 }
 
